@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../static/images/télécharger.png" type="image/x-icon">
+   
     <title>Home</title>
     <style>
         body {
@@ -21,9 +23,30 @@
         p {
             color: #555;
         }
+
+        /* Styles pour la navbar */
+        nav {
+            background-color: #333;
+            padding: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin: 0 10px;
+        }
     </style>
 </head>
 <body>
+    <!-- Navbar -->
+    <nav>
+        <a href="#">Accueil</a>
+        <a href="#">À propos</a>
+        <a href="{{ url_for('supervision') }}">Supervision</a>
+        
+    </nav>
+
     <h1>Page d'accueil</h1>
     <p>Bienvenue sur la page d'accueil de votre application.</p>
 </body>

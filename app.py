@@ -4,8 +4,8 @@ import cx_Oracle
 app = Flask(__name__)
 
 # Configuration de la base de données Oracle
-app.config['ORACLE_USER'] = 'votre_utilisateur'
-app.config['ORACLE_PASSWORD'] = 'votre_mot_de_passe'
+app.config['ORACLE_USER'] = 'OUSMANE'
+app.config['ORACLE_PASSWORD'] = '1234'
 app.config['ORACLE_DSN'] = 'votre_dsn'
 
 @app.route('/')
