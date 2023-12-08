@@ -2,7 +2,7 @@
 ORACLE_CONFIG = {
     'USER': 'ousmane',
     'PASSWORD': '1234',
-    'HOST': 'DESKTOP-OUSMANE',
+    'HOST': 'Desktop-ousmane',
     'PORT': '1521',
-    'SERVICE_NAME': 'orclteste',
+    'SERVICE_NAME': 'orcl',
 }
