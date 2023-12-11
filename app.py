@@ -1,9 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request
 import cx_Oracle
 from config import ORACLE_CONFIG
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event
 
 app = Flask(__name__)
 
@@ -133,7 +135,44 @@ def stockage():
         return f"Erreur de connexion à la base de données: {e}"
 
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'oracle://username:password@host:port/service_name'
+db = SQLAlchemy(app)
 
+# Create a model to log queries
+class QueryLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    query = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime)
+
+# Function to log queries to the database
+def after_cursor_execute(conn, cursor, statement, parameters, context, executemany):
+    query_log = QueryLog(query=statement, timestamp=db.func.current_timestamp())
+    db.session.add(query_log)
+    db.session.commit()
+
+# Bind the event listener to the SQLAlchemy engine
+event.listen(db.engine, 'after_cursor_execute', after_cursor_execute)
+
+# Example route to execute a query and trigger the event
+@app.route('/query_log', methods=['POST'])
+def execute_query():
+    query = request.form.get('query')
+    try:
+        # Connect to the Oracle database
+        connection = cx_Oracle.connect('username', 'password', 'host:port/service_name')
+        cursor = connection.cursor()
+
+        # Execute the query
+        cursor.execute(query)
+        result = cursor.fetchall()
+
+        # Close the cursor and connection
+        cursor.close()
+        connection.close()
+
+        return render_template('query_log.html', query=query, result=result)
+    except cx_Oracle.Error as e:
+        return f"Error executing the query: {e}"
 
 
 
