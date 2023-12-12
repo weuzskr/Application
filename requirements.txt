@@ -1,0 +1,3 @@
+cx_oracle
+requests
+flask_sqlalchemy
