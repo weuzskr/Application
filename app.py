@@ -18,7 +18,22 @@ app.config['ORACLE_DSN'] = (
 
 @app.route('/')
 def home():
-    return render_template('home.html')
+
+    connection = cx_Oracle.connect(
+    ORACLE_CONFIG['USER'],
+    ORACLE_CONFIG['PASSWORD'],
+    app.config['ORACLE_DSN']
+        )
+    cursor = connection.cursor()
+    query = """ SELECT * FROM sys.connection_log ORDER BY login_time DESC FETCH FIRST 5 ROWS ONLY """
+
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+    
+    return render_template('home.html',result=result)
 
 #@app.route('/securite')
 #def securite():
@@ -133,6 +148,117 @@ def stockage():
 
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
+
+
+@app.route('/dashboard')
+def dashboard():
+    try:
+        connection = cx_Oracle.connect(
+            ORACLE_CONFIG['USER'],
+            ORACLE_CONFIG['PASSWORD'],
+            app.config['ORACLE_DSN']
+        )
+
+        # Exécuter les requêtes et récupérer les résultats
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT name, value FROM V$SYSSTAT WHERE name IN ('physical reads', 'physical writes')")
+        result1 = cursor.fetchall()
+
+        cursor.execute("SELECT METRIC_NAME, VALUE FROM V$SYSMETRIC WHERE METRIC_NAME = 'CPU Usage Per Sec'")
+        result2 = cursor.fetchall()
+
+        cursor.execute("SELECT METRIC_NAME, VALUE FROM V$SYSMETRIC WHERE METRIC_NAME LIKE 'Host CPU Utilization%' OR METRIC_NAME LIKE 'SGA Memory%' OR METRIC_NAME LIKE 'PGA Memory%'")
+        result3 = cursor.fetchall()
+
+        cursor.execute("SELECT DISTINCT METRIC_NAME FROM V$SYSMETRIC")
+        result4 = cursor.fetchall()
+
+        cursor.execute("SELECT METRIC_NAME, VALUE FROM V$SYSMETRIC WHERE METRIC_NAME LIKE 'Host CPU Utilization%' OR METRIC_NAME LIKE 'SGA Memory%' OR METRIC_NAME LIKE 'PGA Memory%' OR METRIC_NAME LIKE 'CPU Usage Per Sec%'")
+        result5 = cursor.fetchall()
+
+        # Fermer les curseurs et la connexion à la base de données
+        cursor.close()
+        connection.close()
+
+    # Rendre le modèle HTML avec les résultats
+    
+        return render_template('dashboard.html', result1=result1, result2=result2, result3=result3, result4=result4, result5=result5)
+
+    except cx_Oracle.Error as e:
+        return f"Erreur de connexion à la base de données: {e}"
+
+# ...
+
+
+
+
+def handle_login_failure(username, ip_address):
+    with cx_Oracle.connect(app.config['ORACLE_DSN']) as connection:
+        with connection.cursor() as cursor:
+            cursor.callproc('handle_login_failure', [username, ip_address])
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    
+    # Code pour la vérification des informations d'identification
+    # ...
+
+    # En cas d'échec de connexion, appelez la fonction handle_login_failure
+    handle_login_failure(username, request.remote_addr)
+    
+    return render_template('home.html')
+from flask import Flask, render_template, request, session
+#import cx_Oracle
+
+@app.route('/connexion', methods=['POST'])
+def tentative_connexion():
+    username = request.form['username']
+    password = request.form['password']
+
+    # Configurez votre DSN Oracle
+    dsn = (
+        f"(DESCRIPTION="
+        f"    (ADDRESS=(PROTOCOL=TCP)(HOST={ORACLE_CONFIG['HOST']})(PORT={ORACLE_CONFIG['PORT']}))"
+        f"    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={ORACLE_CONFIG['SERVICE_NAME']}))"
+        f")"
+    )
+
+    try:
+        # Tentez de vous connecter à la base de données Oracle
+        connection = cx_Oracle.connect(username, password, dsn)
+
+        # Enregistrez la tentative de connexion réussie dans la session utilisateur
+        session['connexion_reussie'] = True
+        connection.close()
+
+    except cx_Oracle.DatabaseError as e:
+        # Enregistrez la tentative de connexion échouée dans la session utilisateur
+        session['connexion_reussie'] = False
+
+    return render_template('votre_page_html.html')
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
