@@ -37,5 +37,54 @@
     <!-- Affichage de l'image du diagramme circulaire -->
     <img src="data:image/png;base64,{{ image_base64 }}" alt="Pie Chart">
 
+    <h2>Tablespaces</h2>
+    <table>
+        <tr>
+            <th>Tablespace</th>
+            <th>Espace utilisé (MB)</th>
+        </tr>
+        {% for row in tablespace_data %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Fichiers de données</h2>
+    <table>
+        <tr>
+            <th>Nom du fichier</th>
+            <th>Espace utilisé (MB)</th>
+        </tr>
+        {% for row in datafile_data %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Fichiers de journal</h2>
+    <table>
+        <tr>
+            <th>Membre</th>
+            <th>Espace utilisé (MB)</th>
+        </tr>
+        {% for row in redo_log_data %}
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    {% if graph_url %}
+    <h2>Graphique d'espace disque</h2>
+    <img src="data:image/png;base64,{{ graph_url }}" alt="Graphique d'espace disque">
+    {% endif %}
+
+    <!-- Ajoutez ici d'autres éléments HTML au besoin -->
+
 </body>
 </html>

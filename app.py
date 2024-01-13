@@ -190,6 +190,66 @@ def dashboard():
 
 # ...
 
+import cx_Oracle
+import smtplib
+from email.mime.text import MIMEText
+
+# Établir une connexion à la base de données Oracle
+connection = cx_Oracle.connect(
+    ORACLE_CONFIG['USER'],
+    ORACLE_CONFIG['PASSWORD'],
+    app.config['ORACLE_DSN'],
+    encoding="UTF-8"
+)
+cursor = connection.cursor()
+
+try:
+    # Exécuter la requête pour récupérer le nombre de sessions actives
+    cursor.execute("SELECT COUNT(*) FROM v$session WHERE status = 'ACTIVE'")
+    active_sessions_count = cursor.fetchone()[0]
+    cursor.execute("SELECT * FROM v$transaction")
+    transactions_info = cursor.fetchall()
+    # Paramètres d'envoi d'e-mail
+    from_email = "weuzskr@gmail.com"
+    to_email = "sankhare1999@outlook.com"
+    smtp_server = "smtp.gmail.com"
+    smtp_port = 587
+    smtp_user = "weuzskr@gmail.com"
+    smtp_password = "jmwl dutn dxnb ojcc"
+
+    # Construire le corps du message avec une information statique
+    message_body = f"Nombre de sessions actives : {active_sessions_count}\n\n"
+
+    
+    # Créer l'objet MIMEText
+    msg = MIMEText(message_body)
+
+    # Configurer l'en-tête du message
+    msg["From"] = from_email
+    msg["To"] = to_email
+    msg["Subject"] = "Rapport de Supervision Oracle"
+
+    try:
+        # Configurer le serveur SMTP
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+
+        # Envoyer l'e-mail
+        server.sendmail(from_email, to_email, msg.as_string())
+        print("E-mail envoyé avec succès.")
+    except Exception as e:
+        print(f"Erreur lors de l'envoi de l'e-mail : {str(e)}")
+    finally:
+        # Fermer la connexion SMTP
+        server.quit() if "server" in locals() else None
+
+except Exception as e:
+    print(f"Erreur lors de l'exécution de la requête SQL : {str(e)}")
+finally:
+    # Fermer la connexion Oracle
+    cursor.close()
+    connection.close()
 
 
 
@@ -256,12 +316,77 @@ if __name__ == '__main__':
 
 
 
+from flask import Flask, render_template
+import cx_Oracle
+import matplotlib
+
+matplotlib.use('agg')
 
 
+# Configuration de la base de données Oracle
+connection = cx_Oracle.connect(
+    ORACLE_CONFIG['USER'],
+    ORACLE_CONFIG['PASSWORD'],
+    app.config['ORACLE_DSN']
+)
 
+# Fonction pour exécuter une requête SQL et récupérer les résultats
+def execute_query(sql):
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    cursor.close()
+    return data
 
+# Fonction pour obtenir l'espace utilisé dans les tablespaces
+def get_tablespace_usage():
+    sql = """
+        SELECT tablespace_name, ROUND(SUM(bytes) / 1024 / 1024, 2) AS space_used_mb
+        FROM dba_data_files
+        GROUP BY tablespace_name
+    """
+    return execute_query(sql)
+
+# Fonction pour obtenir l'espace utilisé dans les fichiers de données
+def get_datafile_usage():
+    sql = """
+        SELECT file_name, ROUND(bytes / 1024 / 1024, 2) AS space_used_mb
+        FROM dba_data_files
+    """
+    return execute_query(sql)
+
+# Fonction pour obtenir l'espace utilisé dans les fichiers de journal
+def get_redo_logfile_usage():
+    sql = """
+        SELECT member, ROUND(bytes / 1024 / 1024, 2) AS space_used_mb
+        FROM v$logfile
+    """
+    return execute_query(sql)
+
+# Endpoint pour afficher toutes les informations de stockage
+@app.route('/stockage')
+def stockage():
+    tablespace_data = get_tablespace_usage()
+    datafile_data = get_datafile_usage()
+    redo_log_data = get_redo_logfile_usage()
+
+    # Créer un graphique avec Matplotlib
+    fig, ax = plt.subplots()
+    ax.pie([total_space, disk_usage.free / (1024 ** 3)], labels=['Occupied Space (GB)', 'Free Space (GB)'], autopct='%1.1f%%', startangle=90)
+
+    # Convertir le graphique en image
+    img = BytesIO()
+    fig.savefig(img, format='png')
+    img.seek(0)
+    graph_url = base64.b64encode(img.getvalue()).decode()
+
+    # Fermer le graphique
+    plt.close()
+
+    return render_template('stockage.html', tablespace_data=tablespace_data, datafile_data=datafile_data, redo_log_data=redo_log_data, graph_url=graph_url)
 
 if __name__ == '__main__':
     app.run(debug=True)
-# Importez le module cx_Oracle en haut du fichier
 
+# Fermer la connexion lorsque l'application se termine
+atexit.register(connection.close)
