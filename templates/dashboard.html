@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oracle Dashboard</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.query-result {
+    margin-bottom: 30px;
+
+    h2 {
+        color: #333;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    }
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            margin-bottom: 5px;
+            color: #333;
+        }
+    }
+}
+
+
+</style>
+<body>
+     <!-- Navbar -->
+     <nav>
+        <a href="#"><i class="fas fa-home"></i> Accueil</a>
+        <a href="#"><i class="fas fa-info-circle"></i> À propos</a>
+        <a href="{{ url_for('supervision') }}"><i class="fas fa-eye"></i> Supervision</a>
+        <a href="{{ url_for('stockage') }}"><i class="fas fa-database"></i> Stockage</a>
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-database"></i> dashboard</a>
+    </nav>
+
+
+    <div class="container">
+        <div class="query-result" id="result1">
+            <h2>Physical Reads and Writes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result1 %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="query-result" id="result2">
+            <h2>CPU Usage Per Sec</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result2 %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="query-result" id="result5">
+            <h2>Combined Metrics</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result5 %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="query-result" id="result3">
+            <h2>Host CPU Utilization, SGA Memory, PGA Memory</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result3 %}
+                        <tr>
+                            <td>{{ row[0] }}</td>
+                            <td>{{ row[1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    
+        <div class="query-result" id="result4">
+            <h2>Distinct Metric Names</h2>
+            <ul>
+                {% for item in result4 %}
+                    <li>{{ item[0] }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    
+       
+    </div>
+    
+<script></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="/static/js/scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+SELECT name, value
+FROM V$SYSSTAT
+WHERE name IN ('physical reads', 'physical writes');
+
+SELECT
+    METRIC_NAME,
+    VALUE
+FROM
+    V$SYSMETRIC
+WHERE
+    METRIC_NAME = 'CPU Usage Per Sec';
+
+SELECT
+    METRIC_NAME,
+    VALUE
+FROM
+    V$SYSMETRIC
+WHERE
+    METRIC_NAME LIKE 'Host CPU Utilization%' OR
+    METRIC_NAME LIKE 'SGA Memory%' OR
+    METRIC_NAME LIKE 'PGA Memory%';
+
+
+SELECT DISTINCT METRIC_NAME
+FROM V$SYSMETRIC;
+
+
+SELECT
+    METRIC_NAME,
+    VALUE
+FROM
+    V$SYSMETRIC
+WHERE
+    METRIC_NAME LIKE 'Host CPU Utilization%'
+    OR METRIC_NAME LIKE 'SGA Memory%'
+    OR METRIC_NAME LIKE 'PGA Memory%'
+    OR METRIC_NAME LIKE 'CPU Usage Per Sec%';

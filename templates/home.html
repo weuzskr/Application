@@ -3,8 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../static/images/télécharger.png">
+    <!-- Autres balises head... -->
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+
     <style>
+        nav a:hover {
+        background-color: rgba(255, 0, 0, 0.442);
+        color: white; /* Changer la couleur du texte pour s'assurer de la lisibilité */
+    }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -38,14 +46,16 @@
         }
 
         .dashboard-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin: 15px;
-            flex: 1;
-            max-width: 300px;
-        }
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 15px;
+    flex: 1;
+    max-width: 450px;
+    width: auto; /* Ajout de cette ligne pour l'ajustement automatique en fonction du contenu */
+}
+
 
         h1 {
             text-align: center;
@@ -57,24 +67,81 @@
             text-align: center;
             color: #555;
         }
+
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+    
     </style>
 </head>
 
 <body>
     <!-- Navbar -->
     <nav>
-        <a href="#">Accueil</a>
-        <a href="">À propos</a>
-        <a href="{{ url_for('supervision') }}">Supervision</a>
-        <a href="{{ url_for('stockage') }}">Stockage</a>
+        <a href="#"><i class="fas fa-home"></i> Accueil</a>
+        <a href="#"><i class="fas fa-info-circle"></i> À propos</a>
+        <a href="{{ url_for('supervision') }}"><i class="fas fa-eye"></i> Supervision</a>
+        <a href="{{ url_for('stockage') }}"><i class="fas fa-database"></i> Stockage</a>
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-database"></i> dashboard</a>
     </nav>
 
     <!-- Dashboard Content -->
     <div class="dashboard-container">
         <!-- Dashboard Card 1 -->
         <div class="dashboard-card">
+            <style>
+                @keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.notification {
+  font-size: 18px;
+  text-align: center;
+  color: #8e2424;
+  margin: 50px;
+  opacity: 0;
+  animation: fadeIn 1.5s ease-in-out forwards, blink 1s infinite alternate;
+}
+
+            </style>
             <h2>Module 1</h2>
             <p>Description du module 1.</p>
+            <div class="notification">Pas de sauvegarde en cours, merci</div>
             <!-- Ajoutez d'autres éléments en fonction des besoins -->
         </div>
 
@@ -82,7 +149,29 @@
         <div class="dashboard-card">
             <h2>Module 2</h2>
             <p>Description du module 2.</p>
-            <!-- Ajoutez d'autres éléments en fonction des besoins -->
+            
+            <h1>Connection Log</h1>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-id-badge"></i> Log ID</th>
+                        <th><i class="fas fa-user"></i> Name</th>
+                        <th><i class="fas fa-clock"></i> Hours</th>
+                        <th><i class="fas fa-info-circle"></i> Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result %}
+                        <tr>
+                            <td>{{ row[0] }}</td> <!-- Remplacez [0] par l'indice de la colonne que vous souhaitez afficher -->
+                            <td>{{ row[1] }}</td>
+                            <td>{{ row[2] }}</td>
+                            <td>{{ row[3] }}</td> <!-- Remplacez [1] par l'indice de la colonne suivante -->
+                            <!-- Ajoutez d'autres colonnes si nécessaire -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>!-- Ajoutez d'autres éléments en fonction des besoins -->
         </div>
 
         <!-- Ajoutez d'autres cartes de tableau de bord en fonction des besoins -->
@@ -91,6 +180,17 @@
 
     <h1>Tableau de bord administrateur</h1>
     <p>Bienvenue sur le tableau de bord de votre application.</p>
+
+    <h1>Home Page</h1>    
 </body>
+<script>
+    window.onload = function() {
+        var clientInfo = document.querySelector('meta[name="client-info"]').getAttribute('content');
+        if (clientInfo === 'LOGIN_FAILURE') {
+            alert('Tentative de connexion échouée détectée!');
+        }
+    };
+</script>
 
 </html>
+{% include 'footer.html' %}

@@ -1,0 +1,18 @@
+<!-- votre_page_html.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerte Connexion</title>
+</head>
+<body>
+    {% if 'connexion_reussie' in session %}
+        {% if session['connexion_reussie'] %}
+            <script>alert('Connexion réussie!');</script>
+        {% else %}
+            <script>alert('Échec de la connexion. Veuillez vérifier vos informations d\'identification.');</script>
+        {% endif %}
+        {% endif %}
+    </body>
+</html>
