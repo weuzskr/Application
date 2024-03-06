@@ -8,3 +8,4 @@ GRANT SELECT ON V_$SYSMETRIC TO votre_utilisateur;
 GRANT SELECT ANY DICTIONARY TO votre_utilisateur;
 ALTER USER votre_utilisateur ACCOUNT UNLOCK;
 GRANT EXECUTE ON nom_de_la_procedure TO nom_de_l_utilisateur;
+ 

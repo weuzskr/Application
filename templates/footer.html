@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
@@ -8,20 +9,27 @@
 </head>
 <style>
 
-/*body {
+body {
     margin: 0;
     padding: 0;
-} */
+    min-height: 110vh; /* La hauteur minimale de la fenêtre visible */
+    display: flex;
+    flex-direction: column;
+}
 
 footer {
     background-color: #333;
     color: #fff;
     text-align: center;
-    padding: 20px;
+    padding-bottom: 20px;
+    margin-top: auto; /* Mettez le pied de page en bas en utilisant 'auto' pour la marge supérieure */
 }
 
+/* Votre autre CSS reste inchangé */
+
+
 .social-icons {
-    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 .social-icons a {
@@ -44,12 +52,16 @@ p {
 
     <!-- Contenu de votre site -->
 
-    <footer>
+    <footer style="border: 2px dashed rgb(30, 241, 135); border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
         <div class="social-icons">
-            <a href="https://www.facebook.com/votrepage" target="_blank" title="Facebook"><img src="facebook-icon.png" alt="Facebook"></a>
-            <a href="https://twitter.com/votrecompte" target="_blank" title="Twitter"><img src="twitter-icon.png" alt="Twitter"></a>
-            <a href="https://www.instagram.com/votrecompte" target="_blank" title="Instagram"><img src="instagram-icon.png" alt="Instagram"></a>
-        </div>
+            <a href="https://www.facebook.com/votrepage" target="_blank" title="Facebook">
+                <i style="color:green; font-size: 30px; " class="fab fa-facebook"></i>
+              </a>
+              <a href="https://twitter.com/votrecompte" target="_blank" title="Twitter">
+                <i style="color:green; font-size: 30px; "  class="fab fa-twitter"></i></a>
+              <a href="https://www.instagram.com/votrecompte" target="_blank" title="Instagram">
+                <i style="color:green; font-size: 30px; "  class="fab fa-instagram"></i></a>
+                 </div>
         <p>&copy; 2023 Votre Site. Tous droits réservés.</p>
     </footer>
 
