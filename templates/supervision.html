@@ -4,89 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supervision</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Ajoutez vos styles personnalisés ici */
         body {
-            font-family: 'Arial', sans-serif;
-            margin: 20px;
             padding: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-
-        h1, h2 {
-            color: #007bff;
-        }
-
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        li {
-            margin-bottom: 10px;
-            padding: 8px;
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 5px;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #007bff;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #007bff;
-            color: #fff;
         }
     </style>
 </head>
 <body>
-    <h1>{{ message }}</h1>
+    <div class="container">
+        <h1 class="display-4">{{ message }}</h1>
 
-   
+        <h2 class="mt-4">Tables de l'utilisateur 'OUSMANE'</h2>
 
-    <h2>Tables de l'utilisateur 'OUSMANE'</h2>
-    
+        <div class="row">
+            <div class="col">
+                <h3>Sessions actives</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Utilisateur</th>
+                            <th scope="col">Machine</th>
+                            <th scope="col">Programme</th>
+                            <th scope="col">Heure de connexion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                            <tr>
+                                <td>{{ session[0] }}</td>
+                                <td>{{ session[1] }}</td>
+                                <td>{{ session[2] }}</td>
+                                <td>{{ session[3] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col">
+                <h3>Requêtes SQL de l'utilisateur 'OUSMANE'</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Requête SQL</th>
+                            <th scope="col">Dernière activité</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sql_query in sql_queries %}
+                            <tr>
+                                <td>{{ sql_query[0] }}</td>
+                                <td>{{ sql_query[1] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    <h2>Sessions actives</h2>
-    <table>
-        <tr>
-            <th>Utilisateur</th>
-            <th>Machine</th>
-            <th>Programme</th>
-            <th>Heure de connexion</th>
-        </tr>
-        {% for session in sessions %}
-            <tr>
-                <td>{{ session[0] }}</td>
-                <td>{{ session[1] }}</td>
-                <td>{{ session[2] }}</td>
-                <td>{{ session[3] }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    <h2>Requêtes SQL de l'utilisateur 'OUSMANE'</h2>
-    <table>
-        <tr>
-            <th>Requête SQL</th>
-            <th>Dernière activité</th>
-        </tr>
-        {% for sql_query in sql_queries %}
-            <tr>
-                <td>{{ sql_query[0] }}</td>
-                <td>{{ sql_query[1] }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-    
+    <!-- Bootstrap JS (optionnel si vous n'utilisez pas les fonctionnalités JavaScript de Bootstrap) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

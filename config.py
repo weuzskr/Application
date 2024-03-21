@@ -4,5 +4,5 @@ ORACLE_CONFIG = {
     'PASSWORD': '1234',
     'HOST': 'localhost',
     'PORT': '1521',
-    'SERVICE_NAME': 'orcl',
+    'SERVICE_NAME': 'orclll',
 }

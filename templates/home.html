@@ -1,43 +1,31 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <title>Acceuil-Oracle 19c</title>
     <link rel="icon" type="image/png" href="../static/images/télécharger.png">
     <!-- Autres balises head... -->
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/navbar.css" />
+</head>
 
     <style>
-        nav a:hover {
-        background-color: rgba(255, 0, 0, 0.442);
-        color: white; /* Changer la couleur du texte pour s'assurer de la lisibilité */
-    }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+       
+   /* body {
+    margin: 0;
+    padding: 0;
+    min-height: 110vh; 
+    display: flex;
+    flex-direction: column;
+}  */
 
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
+        
 
         .dashboard-container {
     display: flex;
@@ -45,6 +33,7 @@
     justify-content:center; /* Ajustez selon vos préférences */
     align-items: flex-start;
     padding: 20px;
+    font-family: cursive;
 }
 
 .dashboard-card {
@@ -159,21 +148,24 @@ li {
 
 h3 {
     text-align: center;
+    font-size: small;
 }
+button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Style lors du survol */
+        button:hover {
+            background-color: rgb(214, 114, 114);
+        }
+        
     </style>
 </head>
 
 <body>
-    <!-- Navbar -->
-    <nav>
-        <a href="#"><i style="color: green;" class="fas fa-home fa-lg"></i> Accueil</a>
-        <a href="{{ url_for('dashboard') }}"><i style="color: green;" class="fas fa-tachometer-alt fa-lg"></i> dashboard</a>
-        <a href="{{ url_for('supervision') }}"><i style="color: green;" class="fas fa-eye fa-lg"></i> Supervision</a>
-        <a href="{{ url_for('stockage') }}"><i style="color: green;" class="fas fa-database fa-lg"></i> Stockage</a>
-        <a href="#"><i style="color: green;" class="fas fa-info-circle fa-lg"></i> À propos</a>
-        
-    </nav>
-
+    {% include'header/header.html'%}   
     <!-- Dashboard Content -->
 
         <!-- Dashboard Card 1 -->
@@ -190,34 +182,7 @@ h3 {
         </div>
 
         <!-- Dashboard Card 2 -->
-        <div class="dashboard-card">
-            <div class="centered-icon" id="animated-icon">
-                <i class="fas fa-sign-in-alt fa-2x"></i>
-            </div>
-            <h3>Gestion des Connexions </h3>
-            <p>L'ensemble des Connexions.</p>
-            <table border="1">
-                <thead>
-                    <tr>
-                       <!-- <th><i class="fas fa-id-badge "></i> ID</th> -->
-                        <th><i style="color: green;" class="fas fa-user"></i> Name</th>
-                        <th><i style="color: green;"class="fas fa-clock"></i> Hours</th>
-                        <th><i style="color: green;"class="fas fa-info-circle"></i> Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in result %}
-                        <tr>
-                           <!-- <td>{{ row[0] }}</td> --> <!-- Remplacez [0] par l'indice de la colonne que vous souhaitez afficher -->
-                            <td>{{ row[1] }}</td>
-                            <td>{{ row[2] }}</td>
-                            <td>{{ row[3] }}</td> <!-- Remplacez [1] par l'indice de la colonne suivante -->
-                            <!-- Ajoutez d'autres colonnes si nécessaire -->
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table> <!-- Ajoutez d'autres éléments en fonction des besoins -->
-        </div>
+        
 
         <!-- Ajoutez d'autres cartes de tableau de bord en fonction des besoins -->
 
@@ -227,21 +192,27 @@ h3 {
                 <i class="fas fa-key fa-2x"></i>
             </div>
             
-            <h3>Utilisateurs et Privilèges </h3>
-            <p>L'ensembles de Utilisateurs</p>
+            <h3>Utilisateurs </h3>
+            <p>L'ensemble des Utilisateurs</p>
             <ul>
-                {% for user in users %}
-                    <li>{{ user }}</li>
+                {% for user in users_conn %}
+                    <li>{{ user[0] }}</li>
+                    <form action="/disconnect" method="post">
+                        <input type="hidden" name="username" value="{{ user[0] }}">
+                        <button type="submit"><i class="fas fa-sign-out-alt"></i> Déconnecter</button>
+                    </form>
                 {% endfor %}
             </ul>
+            
         </div>
+        
  <!-- Dashboard Card 2 -->
         <div class="dashboard-card">
             <div class="centered-icon" id="animated-icon">
                 <i class="fas fa-th fa-2x"></i>
             </div>
 
-            <h3>Tables et Index </h3>
+            <h3>Tables </h3>
             <p>L'ensemble des tables.</p>
             <ul>
                 {% for table in tables %}
@@ -249,7 +220,12 @@ h3 {
                 {% endfor %}
             </ul>
         </div>
-    </div>
+
+    <div class="dashboard-card">
+        <canvas id="myChart"></canvas>
+
+
+    </div>    
 
     <div class="slider">
         <div class="slide-track">
@@ -299,7 +275,7 @@ h3 {
     </div>
     
           
-    {% include 'footer.html' %}
+   
 </body>
 <script>
     window.onload = function() {
@@ -308,13 +284,14 @@ h3 {
             alert('Tentative de connexion échouée détectée!');
         }
     };
-// Fonction pour générer une couleur aléatoire au format hexadécimal
-function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
+// Liste des couleurs prédéfinies
+var colors = ['rgba(255, 206, 86, 0.5)', 'rgba(75, 192, 192, 0.5)', 'rgba(153, 102, 255, 0.5)', 'rgba(255, 99, 132, 0.5)'];
+var colorIndex = 0; // Index de la couleur actuelle
+
+// Fonction pour récupérer la couleur suivante dans la liste prédéfinie
+function getNextColor() {
+    var color = colors[colorIndex];
+    colorIndex = (colorIndex + 1) % colors.length; // Passer à la couleur suivante
     return color;
 }
 
@@ -322,15 +299,63 @@ document.addEventListener('DOMContentLoaded', function () {
     var userList = document.querySelectorAll('ul li');
 
     userList.forEach(function (user) {
-        // Appliquer une couleur aléatoire à chaque élément de liste
-        user.style.backgroundColor = getRandomColor();
+        // Appliquer une couleur à chaque élément de liste
+        user.style.backgroundColor = getNextColor();
     });
 });
+
 
 
     
 </script>
 
+<script type="text/javascript">
+    var ctx = document.getElementById('myChart').getContext('2d');
+    
+    // Assurez-vous que les variables owners et num_rows sont correctement définies et non indéfinies
+    var owners = {{ owners|default('[]')|tojson|safe }};
+    var num_rows = {{ num_rows|default('[]')|tojson|safe }}; 
+    
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: owners,
+            datasets: [{
+                label: 'Number of Rows per Owner',
+                data: num_rows,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(153, 102, 255, 0.5)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: {
+                position: 'right'
+            },
+            title: {
+                display: true,
+                text: 'Number of Rows per Owner'
+            }
+        }
+    });
+</script>
+
+
 
 </html>
+{%include 'footer/footer.html'%}
 
