@@ -1,0 +1,85 @@
+nav {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between; /* Pour aligner les éléments à l'extrémité */
+            align-items: center; /* Pour aligner verticalement */
+            /*position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000; /* Assurez-vous que la barre de navigation est en avant par rapport à d'autres éléments */
+        }
+
+        .logo {
+            margin-left: 10px; /* Marge pour le logo */
+           
+        }
+        img.logo {
+            width: 70px; /* Largeur désirée en pixels */
+            height: auto; /* Hauteur automatique pour maintenir les proportions */
+            border: 2px dashed green;
+            border-radius: 8px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* Style pour le bouton de déconnexion */
+        .logout-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        .logout-btn:hover {
+            background-color: #555;
+        }
+
+        /* Style pour la liste déroulante */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #333;
+            min-width: 160px;
+            z-index: 1;
+        }
+
+        .dropdown-content a {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #555;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Ajout pour rendre la navbar responsive */
+        @media screen and (max-width: 768px) {
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+        }

@@ -1,0 +1,35 @@
+<head>
+    <link rel="stylesheet" href="../../static/css/navbar.css"/>
+</head>
+
+<nav>
+    <div class="logo">
+        <!-- Votre logo ici -->
+        <img src="../static/images/ucad1.png" alt="Logo" class="logo">
+    </div>
+    <div>
+    
+        <a href={{url_for("acceuil")}}><i style="color: green;" class="fas fa-tachometer-alt fa-lg"></i> Dashboard</a>
+        <!-- Liste déroulante pour Supervision -->
+        <div class="dropdown">
+            <a href="#" class="dropbtn"><i style="color: green;" class="fas fa-eye fa-lg"></i> Supervision</a>
+            <div class="dropdown-content">
+                <a href="{{ url_for('stockage') }}"><i class="fas fa-memory"></i>  Stockage</a>
+                <a href="{{ url_for('dashboard') }}"> Processeur</a>
+                <a href="#">Option 3</a>
+            </div>
+        </div>
+        <div class="dropdown">
+            <a href="#" class="dropbtn"><i style="color: green;" class="fas fa-shield-alt fa-lg"></i> Sécurite</a>
+            <div class="dropdown-content">
+                <a href="#">Option 1</a>
+                <a href="#">Option 2</a>
+                <a href="#">Option 3</a>
+            </div>
+        </div>
+
+        <a href="{{url_for("teste")}}"><i style="color: green;" class="fas fa-info-circle fa-lg"></i> À propos</a>
+    </div>
+    <!-- Bouton de déconnexion -->
+    <a class="logout-btn" href="/"><i style="color: red;" class="fas fa-sign-out-alt fa-lg"></i> Déconnexion</a>
+</nav>
