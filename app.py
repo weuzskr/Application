@@ -1,12 +1,13 @@
-from flask import Flask, redirect, render_template,request, url_for
+from flask import Flask, redirect, render_template,request, url_for, session
 import cx_Oracle
 from config import ORACLE_CONFIG
 import matplotlib.pyplot as plt
 from io import BytesIO
 import base64
+import smtplib
+from email.mime.text import MIMEText
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
-from flask import Flask
 from flask_scss import Scss
 import tkinter as tk
 from tkinter import ttk
@@ -54,21 +55,118 @@ def update_pie_chart():
     root.mainloop()
 
 
+import cx_Oracle
+from flask import render_template
+import plotly.graph_objs as go
+from flask import Flask, render_template, jsonify
 
-
-
-@app.route("/teste")
+@app.route("/teste",  methods=['GET', 'POST'])
 def teste():
     try:
         conn = cx_Oracle.connect(
-        ORACLE_CONFIG['USER'],
-        ORACLE_CONFIG['PASSWORD'],
-        app.config['ORACLE_DSN']
-            )
-       
-        return render_template('alerte.html', )
+            ORACLE_CONFIG['USER'],
+            ORACLE_CONFIG['PASSWORD'],
+             app.config['ORACLE_DSN']
+        )
+
+        
+        cursor = conn.cursor()
+        # Exécute la requête SQL
+        cursor.execute("""
+            SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time
+            FROM (SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time,
+                         ROW_NUMBER() OVER (ORDER BY cpu_time DESC) AS cpu_rank
+                  FROM (SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time
+                        FROM v$sql
+                        WHERE sql_text NOT LIKE '%v$sql%'
+                        ORDER BY cpu_time DESC)
+                 )
+            WHERE cpu_rank <= 10
+        """)
+        
+        # Récupère tous les résultats
+        results = cursor.fetchall()
+        
+        return render_template('alerte.html', results=results)
+
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
+
+
+
+
+@app.route("/awr")
+def awr():
+    try:
+        conn = cx_Oracle.connect(
+            ORACLE_CONFIG['USER'],
+            ORACLE_CONFIG['PASSWORD'],
+            app.config['ORACLE_DSN']
+        )
+
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT 
+                SQL_ID,
+                EXECUTIONS_DELTA AS EXECUTIONS,
+                ELAPSED_TIME_DELTA / 1000000 AS ELAPSED_TIME_SEC,
+                CPU_TIME_DELTA / 1000000 AS CPU_TIME_SEC,
+                IOWAIT_DELTA / 1000000 AS IOWAIT_SEC,
+                CLWAIT_DELTA / 1000000 AS CLWAIT_SEC,
+                APWAIT_DELTA / 1000000 AS APWAIT_SEC,
+                ROWS_PROCESSED_DELTA
+            FROM 
+                DBA_HIST_SQLSTAT
+            ORDER BY 
+                SQL_ID DESC
+        """)
+        
+        # Récupérer les résultats de la requête
+        data = []
+        for row in cursor.fetchall():
+            data.append({
+                'SQL_ID': row[0],
+                'EXECUTIONS': row[1],
+                'ELAPSED_TIME_SEC': row[2],
+                'CPU_TIME_SEC': row[3],
+                'IOWAIT_SEC': row[4],
+                'CLWAIT_SEC': row[5],
+                'APWAIT_SEC': row[6],
+                'ROWS_PROCESSED_DELTA': row[7]
+            })
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT NAME, BYTES/1024/1024 AS MEGABYTES
+            FROM V$SGAINFO
+        """)
+        data = cursor.fetchall()
+        
+        # Formater les données pour Chart.js
+        labels = [row[0] for row in data]
+        values = [row[1] for row in data]
+
+
+        cursor.execute("""
+            SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time
+            FROM (SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time,
+                         ROW_NUMBER() OVER (ORDER BY cpu_time DESC) AS cpu_rank
+                  FROM (SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time
+                        FROM v$sql
+                        WHERE sql_text NOT LIKE '%v$sql%'
+                        ORDER BY cpu_time DESC)
+                 )
+            WHERE cpu_rank <= 10
+        """)
+        
+        # Récupère tous les résultats
+        results = cursor.fetchall()
+
+        return render_template('awr.html', data=data, labels=labels, values=values, results=results)
+
+    except cx_Oracle.Error as e:
+        return f"Erreur de connexion à la base de données: {e}"
+
+
 
 
 
@@ -148,7 +246,7 @@ def disconnect():
         return "Erreur lors de la déconnexion de l'utilisateur."
 
 
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 def acceuil():
     rows = []
     result=[]
@@ -178,7 +276,7 @@ def acceuil():
         cursor.execute(query_tables)
         tables = [row[0] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT OWNER, TABLE_NAME, TABLESPACE_NAME, NUM_ROWS, LAST_ANALYZED FROM ALL_TABLES FETCH FIRST 10 ROWS ONLY")
+        cursor.execute("SELECT OWNER, TABLE_NAME, TABLESPACE_NAME, NUM_ROWS, LAST_ANALYZED FROM ALL_TABLES FETCH FIRST 15 ROWS ONLY")
         rows = cursor.fetchall()
         
          # Transformation des données en format adapté pour Chart.js
@@ -188,14 +286,71 @@ def acceuil():
         query1 = "SELECT username FROM dba_users WHERE created > SYSDATE - 30 AND default_tablespace NOT IN ('SYSTEM', 'SYSAUX') ORDER BY created"
         cursor.execute(query1)
         users_conn = cursor.fetchall()
+
+        quer=("SELECT name, value FROM v$sysstat WHERE name LIKE 'bytes%'")
+
+        # Récupérer les résultats de la requête
+        cursor.execute(quer)
+        data = cursor.fetchall()
+        names = [row[0] for row in data]
+        values = [row[1] for row in data]
+
+        # Créer un diagramme circulaire avec Plotly
+        pie_chart = go.Pie(labels=names, values=values)
+
+        # Convertir le diagramme circulaire en HTML
+        graph_html = go.Figure(pie_chart).to_html(full_html=False)
+
+        
+
         cursor.close()
         conn.close()
         
-        return render_template('home.html',users_conn=users_conn, owners=owners, num_rows=num_rows,rows=rows, result=result,users=users,tables=tables)
+        return render_template('home.html', graph=graph_html,users_conn=users_conn, owners=owners, num_rows=num_rows,rows=rows, result=result,users=users,tables=tables)
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
 
+@app.route("/audit",  methods=['GET', 'POST'])
+def audit():
+    try:
+        conn = cx_Oracle.connect(
+            ORACLE_CONFIG['USER'],
+            ORACLE_CONFIG['PASSWORD'],
+             app.config['ORACLE_DSN']
+        )
 
+        if request.method == 'POST':
+            selected_user = request.form['users']
+            audit_results = perform_audit(conn, selected_user)
+            return render_template('audit.html', audit_results=audit_results)
+        else:
+            cursor = conn.cursor()
+            cursor.execute("SELECT username FROM dba_users WHERE created > SYSDATE - 30  AND default_tablespace NOT IN ('SYSTEM', 'SYSAUX') ORDER BY created")
+            users = [row[0] for row in cursor.fetchall()]
+            cursor.close()
+            conn.close()
+        
+        return render_template('audit.html', users=users)
+
+    except cx_Oracle.Error as e:
+        return f"Erreur de connexion à la base de données: {e}"
+
+def perform_audit(conn, username):
+    cursor = conn.cursor()
+    query = """
+        SELECT TIMESTAMP, OS_USERNAME, USERHOST, TERMINAL, ACTION_NAME, OBJ_NAME, SQL_TEXT
+        FROM (
+            SELECT TIMESTAMP, OS_USERNAME, USERHOST, TERMINAL, ACTION_NAME, OBJ_NAME, SQL_TEXT
+            FROM DBA_AUDIT_TRAIL
+            WHERE USERNAME = :username
+            ORDER BY TIMESTAMP DESC
+        )
+        WHERE ROWNUM <= 10
+    """
+    cursor.execute(query, username=username)
+    audit_results = cursor.fetchall()
+    cursor.close()
+    return audit_results
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -391,16 +546,6 @@ def dashboard():
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
 
-# ...
-
-import cx_Oracle
-import smtplib
-from email.mime.text import MIMEText
-
-import cx_Oracle
-import smtplib
-from email.mime.text import MIMEText
-
 # Établir une connexion à la base de données Oracle
 connection = cx_Oracle.connect(
      ORACLE_CONFIG['USER'],
@@ -463,9 +608,6 @@ finally:
     cursor.close()
     connection.close()
 
-
-
-
 #def handle_login_failure(username, ip_address):
     #with cx_Oracle.connect(app.config['ORACLE_DSN']) as connection:
         #with connection.cursor() as cursor:
@@ -483,33 +625,9 @@ def loggin():
     #handle_login_failure(username, request.remote_addr)
     
     return render_template('home.html')
-from flask import Flask, render_template, request, session
-#import cx_Oracle
 
 @app.route('/connexion', methods=['POST'])
 def tentative_connexion():
-    username = request.form['username']
-    password = request.form['password']
-
-    # Configurez votre DSN Oracle
-    dsn = (
-        f"(DESCRIPTION="
-        f"    (ADDRESS=(PROTOCOL=TCP)(HOST={ORACLE_CONFIG['HOST']})(PORT={ORACLE_CONFIG['PORT']}))"
-        f"    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={ORACLE_CONFIG['SERVICE_NAME']}))"
-        f")"
-    )
-
-    try:
-        # Tentez de vous connecter à la base de données Oracle
-        connection = cx_Oracle.connect(username, password, dsn)
-
-        # Enregistrez la tentative de connexion réussie dans la session utilisateur
-        session['connexion_reussie'] = True
-        connection.close()
-
-    except cx_Oracle.DatabaseError as e:
-        # Enregistrez la tentative de connexion échouée dans la session utilisateur
-        session['connexion_reussie'] = False
 
     return render_template('votre_page_html.html')
 

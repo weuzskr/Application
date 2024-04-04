@@ -3,13 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-    <link rel="stylesheet" href="../static/css/navbar.css"/>
     <title>Alerte</title>
-   
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .table-container {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .sql-text {
+            display: none;
+        }
+        .sql-id:hover {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
-   {% include'header/header.html'%}
-    {% include'footer/footer.html'%}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="table-container mt-4">
+                    <div class="table-responsive">
+                        <table class="table table-striped" title="Cliquez sur le SQL ID de requete pour faire apparaître l'integralite de la rêquete  ">
+                            <thead>
+                                <tr>
+                                    <th>SQL ID</th>
+                                    <th>SQL Text</th>
+                                    <th>Executions</th>
+                                    <th>Buffer Gets</th>
+                                    <th>Disk Reads</th>
+                                    <th>CPU Time</th>
+                                   
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in results %}
+                                <tr>
+                                    <td class="sql-id" data-id="{{ row[0] }}">{{ row[0] }}</td>
+                                    <td class="sql-text">{{ row[1] }}</td>
+                                    <td>{{ row[2] }}</td>
+                                    <td>{{ row[3] }}</td>
+                                    <td>{{ row[4] }}</td>
+                                    <td>{{ row[5] }}</td>
+                                    <td>{{ row[6] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.sql-id').click(function() {
+                $(this).next('.sql-text').toggle();
+            });
+        });
+    </script>
 </body>
 </html>

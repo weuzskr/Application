@@ -17,13 +17,25 @@
 
     <style>
        
-   /* body {
-    margin: 0;
+    body {
+    /*margin: 0;
     padding: 0;
     min-height: 110vh; 
     display: flex;
-    flex-direction: column;
-}  */
+    flex-direction: column; */
+     background-image: url(../static/images/back2.jpg);
+}  
+
+
+ /* Ajouter du style CSS pour le graphique */
+ #graph {
+            width: 600px;
+            height: 400px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+            border: 2px dotted rgba(197, 229, 197, 0.058);
+            border-radius: 10px;
+        }
 
         
 
@@ -32,7 +44,7 @@
     flex-wrap: wrap;
     justify-content:center; /* Ajustez selon vos préférences */
     align-items: flex-start;
-    padding: 20px;
+    padding-bottom: 100px;
     font-family: cursive;
 }
 
@@ -161,11 +173,28 @@ button {
             background-color: rgb(214, 114, 114);
         }
         
+        #info {
+    position: fixed;
+    top: 50px;
+    right: -300px; /* Masquer initialement l'aside */
+    width: 280px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    transition: right 0.5s ease; /* Ajouter une transition fluide */
+}
+
+#info.active {
+    right: 20px; /* Afficher l'aside */
+}
+
+
     </style>
 </head>
 
 <body>
     {% include'header/header.html'%}   
+    
     <!-- Dashboard Content -->
 
         <!-- Dashboard Card 1 -->
@@ -222,10 +251,50 @@ button {
         </div>
 
     <div class="dashboard-card">
+        
         <canvas id="myChart"></canvas>
 
 
     </div>    
+
+    
+
+    
+
+
+    <aside id="info">
+        <h2 style="text-align: center;">Informations</h2>
+        <p>Ceci est un exemple de diagramme circulaire affichant les octets reçus et envoyés via SQL*Net</p>
+    </aside>
+
+    <div id="graph">
+        {{ graph | safe }}
+    </div>
+
+    <div id="graph">
+        
+
+    <form action="/audit" target="_blank" method="post" style=" max-width: 300px; margin-right: 70px; margin-top: 100px; padding: 20px; background-color: #f9f9f9; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); .center {
+        margin: auto;
+        width: 50%;
+        padding: 10px;
+    }">
+        <label for="users" style="display: block;
+        margin-bottom: 10px;
+        color: #333; text-align: center;">Utilisateurs Disponibles :</label>
+        <select id="users" name="users" style=" width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; /* pour inclure la bordure dans la largeur totale */">
+            {% for user in users %}
+            <option value="{{ user }}" style=" padding: 10px;
+            background-color: #f9f9f9;">{{ user }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="audit" value="Audit" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; button:hover {
+            background-color: #45a049;
+        }"><i class="fas fa-search"></i> Audit</button>
+    </form>
+    
+</div>
+
 
     <div class="slider">
         <div class="slide-track">
@@ -277,6 +346,44 @@ button {
           
    
 </body>
+
+<script>
+    document.getElementById('graph').addEventListener('mouseover', function() {
+    document.getElementById('info').classList.add('active'); // Afficher l'aside au survol du diagramme
+});
+
+document.getElementById('graph').addEventListener('mouseout', function() {
+    document.getElementById('info').classList.remove('active'); // Masquer l'aside lorsque le curseur quitte le diagramme
+});
+
+document.addEventListener('click', function(event) {
+    if (!document.getElementById('info').contains(event.target) && !document.getElementById('graph').contains(event.target)) {
+        document.getElementById('info').classList.remove('active'); // Masquer l'aside lorsque l'utilisateur clique en dehors de celui-ci
+    }
+});
+
+</script>
+
+<script>
+    // Ajouter une animation au graphique circulaire
+    Plotly.animate('graph', [{
+        data: [{
+            opacity: 0.8, // Ajouter de la transparence
+            marker: {
+                colors: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)'] // Définir des couleurs personnalisées
+            }
+        }]
+    }], {
+        transition: {
+            duration: 1000, // Durée de l'animation en millisecondes
+            easing: 'cubic-in-out' // Type d'animation
+        },
+        frame: {
+            duration: 2000 // Durée entre chaque trame de l'animation en millisecondes
+        }
+    });
+</script>
+
 <script>
     window.onload = function() {
         var clientInfo = document.querySelector('meta[name="client-info"]').getAttribute('content');
@@ -342,6 +449,18 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         options: {
             responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    title: {
+                        display: true,
+                        text: 'Utilisation de la mémoire par les tablespaces',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
             maintainAspectRatio: false,
             legend: {
                 position: 'right'
@@ -354,7 +473,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 </script>
 
-
+<script>
+    // Réinitialiser le formulaire après soumission
+    document.getElementById("auditForm").addEventListener("submit", function() {
+        this.reset();
+    });
+</script>
 
 </html>
 {%include 'footer/footer.html'%}
