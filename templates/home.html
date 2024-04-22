@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="../static/css/style.css">
     <link rel="stylesheet" href="../static/css/navbar.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flipclock/0.7.8/flipclock.min.css">
 </head>
 
     <style>
@@ -24,6 +25,7 @@
     display: flex;
     flex-direction: column; */
      background-image: url(../static/images/back2.jpg);
+     margin-bottom: 800px;
 }  
 
 
@@ -260,6 +262,8 @@ button {
     
 
     
+    <div class="clock" style="margin: 2em; text-align: center; border: 2px solid rgb(213, 226, 213); margin-right: 450px; margin-left: 450px; 
+    border-radius: 6px; background-color: #0101017c;" ></div>
 
 
     <aside id="info">
@@ -274,14 +278,19 @@ button {
     <div id="graph">
         
 
-    <form action="/audit" target="_blank" method="post" style=" max-width: 300px; margin-right: 70px; margin-top: 100px; padding: 20px; background-color: #f9f9f9; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); .center {
+    <form action="/audit" target="_blank" method="post" style="  max-width: 1500px; margin-right: 70px; margin-top: 100px; padding: 50px; background-color: #f9f9f9; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); .center {
         margin: auto;
         width: 50%;
         padding: 10px;
     }">
+    <div class="centered-icon" id="animated-icon">
+        <i class="fas fa-users-cog fa-2x"></i>
+    </div>
+    <h3>Audit des utilisateurs</h3>
         <label for="users" style="display: block;
         margin-bottom: 10px;
         color: #333; text-align: center;">Utilisateurs Disponibles :</label>
+        
         <select id="users" name="users" style=" width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; /* pour inclure la bordure dans la largeur totale */">
             {% for user in users %}
             <option value="{{ user }}" style=" padding: 10px;
@@ -346,6 +355,15 @@ button {
           
    
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flipclock/0.7.8/flipclock.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var clock = $('.clock').FlipClock({
+            clockFace: 'TwelveHourClock' // Vous pouvez changer pour 'TwentyFourHourClock' si vous préférez
+        });
+    });
+</script>
 
 <script>
     document.getElementById('graph').addEventListener('mouseover', function() {

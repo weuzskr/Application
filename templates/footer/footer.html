@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
    
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../../static/css/style.css">
 </head>
-<style>body {
-  margin: 0;
+<style>
+body {
+  margin-bottom: 20px;
   padding: 0;
   font-family: Arial, sans-serif;
   min-height: 100vh;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius:10px ;
 }
 
 .content {
@@ -30,19 +34,48 @@ footer {
 .footer-content {
   max-width: 1200px;
   margin: 0 auto;
+  display: flex; /* Utiliser flexbox pour aligner les éléments */
+  justify-content: space-between; /* Aligner les éléments sur l'espace entre eux */
+  align-items: center; /* Aligner les éléments verticalement */
+}
+
+.form-newsletter {
+  margin-top: 20px;
+  margin-left: 20px; /* Ajouter une marge à gauche pour centrer le formulaire à gauche */
+}
+
+.form-newsletter input[type="email"] {
+  padding: 10px;
+  width: 200px;
+  border: 1px solid #ccc;
+}
+
+.form-newsletter input[type="submit"] {
+  padding: 10px 20px;
+  background-color: green;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }
 </style>
 <body>
     
   <footer id="footer">
     <div class="footer-content">
-        <p>&copy; 2024 UCAD-FST. Tous droits réservés.</p>
-        <div class="social-icons">
-            <a href="https://github.com/votre_nom_utilisateur" target="_blank"><i style="color: green;" class="fab fa-github fa-lg"></i></a>
-            <a href="https://facebook.com/votre_nom_utilisateur" target="_blank"><i style="color: green;" class="fab fa-facebook fa-lg"></i></a>
-            <a href="https://twitter.com/votre_nom_utilisateur" target="_blank"><i style="color: green;" class="fab fa-twitter fa-lg"></i></a>
-            <a href="https://linkedin.com/in/votre_nom_utilisateur" target="_blank"><i style="color: green;" class="fab fa-linkedin fa-lg"></i></a>
+        <div>
+            <p>&copy; 2024 UCAD-FST. Tous droits réservés.</p>
+            <div class="social-icons">
+                <a href="https://github.com/votre_nom_utilisateur" target="_blank"><i style="color: green;" class="fab fa-github fa-lg"></i>  </a>
+                <a href="https://facebook.com/votre_nom_utilisateur" target="_blank"><i style="color: green;" class="fab fa-facebook fa-lg"></i></a>
+                <a href="https://twitter.com/votre_nom_utilisateur" target="_blank"><i style="color: green;" class="fab fa-twitter fa-lg"></i></a>
+                <a href="https://linkedin.com/in/votre_nom_utilisateur" target="_blank"><i style="color: green;" class="fab fa-linkedin fa-lg"></i></a>
+            </div>
         </div>
+        <form class="form-newsletter" action="/subscribe" method="post">
+            <label for="email">Inscrivez-vous à notre newsletter:</label>
+            <input type="email" id="email" name="email" placeholder="Votre adresse e-mail" required>
+            <input type="submit" value="S'inscrire">
+        </form>
     </div>
 
     <script src="script.js">

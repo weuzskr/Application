@@ -14,18 +14,18 @@
         <div class="dropdown">
             <a href="#" class="dropbtn"><i style="color: green;" class="fas fa-eye fa-lg"></i> Supervision</a>
             <div class="dropdown-content">
-                <a href="{{ url_for('stockage') }}"><i class="fas fa-hdd "></i> Stockage</a>
-                <a href="{{ url_for('dashboard') }}"><i class="fas fa-microchip "></i> Processeur</a>
-                <a href="{{ url_for('awr') }}"><i class="fab fa-aws "></i> AWR</a>
+                <a href="{{ url_for('stockage') }}"><i style="color: green; " class="fas fa-hdd "></i> Stockage</a>
+                <a href="{{ url_for('dashboard') }}"><i style="color: green;" class="fas fa-microchip "></i> Processeur</a>
+                <a href="{{ url_for('awr') }}"><i style="color: green;" class="fab fa-aws "></i> AWR</a>
             </div>
             
         </div>
         <div class="dropdown">
             <a href="#" class="dropbtn"><i style="color: green;" class="fas fa-shield-alt fa-lg"></i> Sécurite</a>
             <div class="dropdown-content">
-                <a href="#"><i class="fas fa-lock "></i> Privilèges</a>
-                <a href="#"><i class="fas fa-user-lock "></i> Accès auth</a>
-                <a href="#"><i class="fas fa-exclamation-circle "></i> Incidents</a>
+                <a href="#"><i style="color: green;" class="fas fa-lock "></i> Privilèges</a>
+                <a href="#"><i style="color: green;" class="fas fa-user-lock "></i> Accès auth</a>
+                <a href="{{url_for('incident')}}"><i style="color: green;" class="fas fa-exclamation-circle "></i> Incidents</a>
             </div>
             
         </div>

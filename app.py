@@ -8,9 +8,11 @@ import smtplib
 from email.mime.text import MIMEText
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
+from datetime import datetime
 from flask_scss import Scss
 import tkinter as tk
 from tkinter import ttk
+import plotly.graph_objs as go
 import json
 import numpy as np
 app = Flask(__name__)
@@ -55,43 +57,81 @@ def update_pie_chart():
     root.mainloop()
 
 
-import cx_Oracle
-from flask import render_template
-import plotly.graph_objs as go
-from flask import Flask, render_template, jsonify
 
-@app.route("/teste",  methods=['GET', 'POST'])
+import plotly.graph_objs as go
+import plotly.express as px
+@app.route('/teste')
 def teste():
     try:
-        conn = cx_Oracle.connect(
+        connection = cx_Oracle.connect(
             ORACLE_CONFIG['USER'],
             ORACLE_CONFIG['PASSWORD'],
-             app.config['ORACLE_DSN']
+            app.config['ORACLE_DSN']
         )
+        
+       
+            # Closing cursor and connection
+        cursor.close()
+        connection.close()
 
-        
-        cursor = conn.cursor()
-        # Exécute la requête SQL
-        cursor.execute("""
-            SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time
-            FROM (SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time,
-                         ROW_NUMBER() OVER (ORDER BY cpu_time DESC) AS cpu_rank
-                  FROM (SELECT sql_id, sql_text, executions, buffer_gets, disk_reads, cpu_time, elapsed_time
-                        FROM v$sql
-                        WHERE sql_text NOT LIKE '%v$sql%'
-                        ORDER BY cpu_time DESC)
-                 )
-            WHERE cpu_rank <= 10
-        """)
-        
-        # Récupère tous les résultats
-        results = cursor.fetchall()
-        
-        return render_template('alerte.html', results=results)
+
+        return render_template('alerte.html')
 
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
 
+@app.route('/incident')
+def incident():
+    try:
+        connection = cx_Oracle.connect(
+            ORACLE_CONFIG['USER'],
+            ORACLE_CONFIG['PASSWORD'],
+            app.config['ORACLE_DSN']
+        )
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM V$DIAG_INFO")
+        results = cursor.fetchall()
+       
+        
+        # Extraction des données pour le diagramme
+        labels = [row[0] for row in results]
+        values = [row[1] for row in results]
+
+            # Création des données de la barre
+        bar = go.Bar(
+            x=values,
+            y=labels,
+            orientation='v',  # horizontal
+            marker=dict(color='rgb(65, 105, 225)')  # Couleur de la barre
+        )
+        # Création de la mise en page du graphique
+        layout = go.Layout(
+            title='Diagramme à barres des résultats de la requête',
+            xaxis=dict(title='Valeurs'),  # Titre de l'axe x
+            yaxis=dict(title='Labels'),  # Titre de l'axe y
+            plot_bgcolor='rgba(0,0,0,0)',  # Couleur de fond du graphique
+            paper_bgcolor='rgba(0,0,0,0)',  # Couleur de fond du papier
+            font=dict(color='black')  # Couleur du texte
+        )
+
+        # Création de la figure
+        fig = go.Figure(data=[bar], layout=layout)
+
+        # Convertir le graphique en code HTML
+        graph_html1 = fig.to_html(full_html=False)
+
+            # Closing cursor and connection
+        cursor.close()
+        connection.close()
+
+
+        return render_template('incident.html',graph_html=graph_html1)
+
+    except cx_Oracle.Error as e:
+        return f"Erreur de connexion à la base de données: {e}"
+
+
+ 
 
 
 
@@ -300,13 +340,14 @@ def acceuil():
 
         # Convertir le diagramme circulaire en HTML
         graph_html = go.Figure(pie_chart).to_html(full_html=False)
+        now = datetime.now().strftime("%H:%M:%S")
 
         
 
         cursor.close()
         conn.close()
         
-        return render_template('home.html', graph=graph_html,users_conn=users_conn, owners=owners, num_rows=num_rows,rows=rows, result=result,users=users,tables=tables)
+        return render_template('home.html', current_date=now,graph=graph_html,users_conn=users_conn, owners=owners, num_rows=num_rows,rows=rows, result=result,users=users,tables=tables)
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
 
@@ -494,15 +535,27 @@ def stockage():
         WHERE t1.tablespace_name = t2.tablespace_name
     """)
     
+    
         # Récupération des résultats
         results = cursor.fetchall()
+
+        cursor.execute("SELECT SUM(bytes) FROM dba_data_files")
+        result1 = cursor.fetchone()
+        occupied_space_bytes = result1[0]
+        occupied_space_gb = occupied_space_bytes / (1024 ** 3)  # Convertir en gigaoctets
+
+        # Récupérer la capacité totale du disque C
+        total_space_gb = 1000  # Remplacez par la capacité totale réelle de votre disque C en gigaoctets
+
+        # Calculer le pourcentage d'espace occupé
+        occupancy_percentage = (occupied_space_gb / total_space_gb) * 100
 
         # Closing cursor and connection
         cursor.close()
         connection.close()
 
 
-        return render_template('stockage.html',data=tablespace_rows,results=results)
+        return render_template('stockage.html',data=tablespace_rows,results=results,occupied_space_gb=occupied_space_gb, total_space_gb=total_space_gb, occupancy_percentage=occupancy_percentage)
 
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
@@ -630,6 +683,9 @@ def loggin():
 def tentative_connexion():
 
     return render_template('votre_page_html.html')
+
+
+    
 
 if __name__ == '__main__':
     app.run(debug=True)
