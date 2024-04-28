@@ -684,8 +684,5 @@ def tentative_connexion():
 
     return render_template('votre_page_html.html')
 
-
-    
-
 if __name__ == '__main__':
     app.run(debug=True)

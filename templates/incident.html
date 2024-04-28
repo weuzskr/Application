@@ -8,14 +8,24 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
+            background-image: url(../static/images/back2.jpg);
+            
             background-color: #f7f7f7;
         }
         h1 {
             text-align: center;
             margin-bottom: 30px;
-        }
+            color: green; /* Couleur du texte en vert */
+            font-family: Arial, sans-serif; /* Police de caractères */
+            text-align: center; /* Centrage du texte */
+            text-transform: uppercase; /* Convertit le texte en majuscules */
+            border: 2px solid green; /* Bordure verte de 2 pixels */
+            background-color: #333;
+            border-radius: 12px;
+            padding: 10px 20px; /* Espacement interne */
+            margin-left: 200px;
+            margin-right: 200px;
+            }
         #graph {
             margin: 0 auto;
             width: 80%;
@@ -23,15 +33,22 @@
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            margin-bottom: 50px;
+            padding-bottom: 40px;
+            
         }
     </style>
 </head>
 <body>
-    <h1>Diagramme à barres des résultats de la requête</h1>
+
+    {%include	'header/header.html'%}
+
+    <h1>Diagramme en barres des résultats de la requête</h1>
     <!-- Div pour afficher le graphique -->
     <div id="graph">
         {{ graph_html | safe }}  <!-- Afficher le graphique HTML en toute sécurité -->
     </div>
+
+    {%include	'footer/footer.html'%}
 </body>
 </html>

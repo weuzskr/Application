@@ -127,7 +127,15 @@
 <body>
     {%include 'header/header.html'%}
     <div class="container">
-        <h1>Occupied Space</h1>
+        <h1 style="color: green; /* Couleur du texte en vert */
+        font-family: Arial, sans-serif; /* Police de caractères */
+        text-align: center; /* Centrage du texte */
+        text-transform: uppercase; /* Convertit le texte en majuscules */
+        border: 2px solid green; /* Bordure verte de 2 pixels */
+        background-color: #333;
+        border-radius: 12px;
+        padding: 10px 20px; /* Espacement interne */
+        /* Vous pouvez ajouter d'autres styles CSS selon vos préférences */">Occupied Space</h1>
         <div class="info">
             <p>Occupied space by Oracle database on disk C: {{ occupied_space_gb }} GB</p>
             <p>Total space on disk C: {{ total_space_gb }} GB</p>
