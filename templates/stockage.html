@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Space Usage Graph</title>
+    <title>Oracle-Space Usage Graph</title>
+    <link rel="icon" type="image/png" href="../static/images/télécharger.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <!-- Intégration de Bootstrap -->
@@ -12,10 +13,8 @@
     
     
     <style>
-       .container {
-    display:flexbox;
-    flex-direction: row; /* Disposition horizontale */
-}
+       
+
         body {
             display: flex;
             margin: 0;
@@ -23,24 +22,28 @@
             min-height: 110vh; /* La hauteur minimale de la fenêtre visible */
             display: flex;
             flex-direction: column;
+             background-image: url(../static/images/back2.jpg);
         }
 
         .table {
             border: 1px solid #dee2e6;
-            width: 100%;
+            width: calc(90% - 0px); /* Diviser l'espace disponible en deux */
             height: auto;
-            max-width: 800px; /* Max width for the graph */
+            max-width: 1000px; /* Max width for the graph */
             max-height: 400px; /* Max height for the graph */
             border: 1px solid #ccc; /* Border style */
             box-sizing: border-box;
             text-align: center;
             margin-top: 50px; /* Ajouter une marge supérieure */
+            padding-bottom: 600px;
+            margin-left: 10px;
+            margin-top: 300px;
         }
-        
+
         canvas {
-            width: 100%;
+            width: calc(50% - 5px); /* Diviser l'espace disponible en deux */
             height: auto;
-            max-width: 800px; /* Max width for the graph */
+            max-width: 400px; /* Max width for the graph */
             max-height: 400px; /* Max height for the graph */
             border: 1px solid #ccc; /* Border style */
             box-sizing: border-box;
@@ -48,25 +51,6 @@
             margin-top: 50px; /* Ajouter une marge supérieure */
         }
 
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-       
         th {
             border: 1px solid #dee2e6;
             background-color: #f2f2f2;
@@ -76,6 +60,7 @@
             padding: 10px; /* Espacement intérieur */
             text-align: left; /* Alignement du texte à gauche */
         }
+
         td {
             border: 1px solid #dee2e6;
             font-size: 13px; /* Taille de police personnalisée */
@@ -83,52 +68,112 @@
             padding: 10px; /* Espacement intérieur */
             text-align: left; /* Alignement du texte à gauche */
         }
+
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
         tr:hover {
             background-color: #ddd;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 3px solid #ccc;
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .info {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .info p {
+            margin: 10px 0;
+        }
+        .progress {
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background-color: red;
+            height: 30px;
+            line-height: 30px;
+            color: rgb(217, 51, 51);
+            text-align: center;
+            transition: width 0.5s ease;
+        }
+
+        #data-table{
+            border: 2px outset #CCC;
+            margin-top: 70px;
+            border-radius: 6px;
+        }
+
+        #spaceUsageChart{
+            border: 2px inset #CCC;
+            margin-top: 70px; 
+            margin-bottom: 20px;
+            border-radius: 6px;
         }
     </style>
 </head>
 <body>
-    <nav>
-        <a href={{url_for("acceuil")}}><i style="color: green;" class="fas fa-home fa-lg"></i> Accueil</a>
-        <a href="{{ url_for('dashboard') }}"><i style="color: green;" class="fas fa-tachometer-alt fa-lg"></i> dashboard</a>
-        <a href="{{ url_for('supervision') }}"><i style="color: green;" class="fas fa-eye fa-lg"></i> Supervision</a>
-        <a href="{{ url_for('stockage') }}"><i style="color: green;" class="fas fa-database fa-lg"></i> Stockage</a>
-        <a href="{{url_for("teste")}}"><i style="color: green;" class="fas fa-info-circle fa-lg"></i> À propos</a>
-        
-    </nav>
-<div class="container">
+    {%include 'header/header.html'%}
+    <div class="container">
+        <h1 style="color: green; /* Couleur du texte en vert */
+        font-family: Arial, sans-serif; /* Police de caractères */
+        text-align: center; /* Centrage du texte */
+        text-transform: uppercase; /* Convertit le texte en majuscules */
+        border: 2px solid green; /* Bordure verte de 2 pixels */
+        background-color: #333;
+        border-radius: 12px;
+        padding: 10px 20px; /* Espacement interne */
+        /* Vous pouvez ajouter d'autres styles CSS selon vos préférences */">Occupied Space</h1>
+        <div class="info">
+            <p>Occupied space by Oracle database on disk C: {{ occupied_space_gb }} GB</p>
+            <p>Total space on disk C: {{ total_space_gb }} GB</p>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" style="width: {{ occupancy_percentage }}%">{{ occupancy_percentage }}%</div>
+        </div>
+    </div>
 
-     <canvas id="spaceUsageChart"></canvas>
 
-    <table id="data-table" class="table table-sm table-striped table-hover">
-        <thead>
-            <tr>
-                <th onclick="sortTable(0)"><i class="fas fa-table"></i> Tablespace</th>
-                <th onclick="sortTable(1)"><i class="fas fa-file"></i> File Name</th>
-                <th onclick="sortTable(2)"><i class="fas fa-database"></i> Total Bytes</th>
-                <th onclick="sortTable(3)"><i class="fas fa-database"></i> Used Bytes</th>
-                <th onclick="sortTable(4)"><i class="fas fa-database"></i> Free Bytes</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in results %}
-            <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-                <td>{{ row[3] }}</td>
-                <td>{{ row[4] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-</div>
+    <div style="display: flex; margin-bottom: 100px; margin-left: 50px; margin-top: -100px;">
+        <canvas id="spaceUsageChart" ></canvas>
+        <table id="data-table" class="table table-sm table-striped table-hover">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)"><i class="fas fa-table"></i> Tablespace</th>
+                    <th onclick="sortTable(1)"><i class="fas fa-file"></i> File Name</th>
+                    <th onclick="sortTable(2)"><i class="fas fa-database"></i> Total Bytes</th>
+                    <th onclick="sortTable(3)"><i class="fas fa-database"></i> Used Bytes</th>
+                    <th onclick="sortTable(4)"><i class="fas fa-database"></i> Free Bytes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     
+
+   
 <!-- Chargement de jQuery et des scripts personnalisés -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
@@ -212,5 +257,5 @@
 
     
 </body>
-{% include 'footer.html' %}
+{%include 'footer/footer.html'%}
 </html>

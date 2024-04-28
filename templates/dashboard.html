@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oracle Dashboard</title>
+    <title>Oracle-Processor Dashboard</title>
+    <link rel="icon" type="image/png" href="../static/images/télécharger.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <link rel="stylesheet" href="../static/css/">
@@ -14,25 +15,8 @@
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-}
-    
-
-       nav {
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin: 0 15px;
-        }
-
-        nav a:hover {
-            text-decoration: underline;
-        }  
+    background-image: url(../static/images/back2.jpg);
+}  
 
 .container {
     max-width: 1200px;
@@ -80,14 +64,8 @@
 
 </style>
 <body>
-      Navbar 
-     <nav>
-        <a href="{{url_for('acceuil')}}"><i style="color: green;" class="fas fa-home fa-lg"></i> Accueil</a>
-        <a href="{{ url_for('dashboard') }}"><i style="color: green;" class="fas fa-tachometer-alt fa-lg"></i> dashboard</a>
-        <a href="{{ url_for('supervision') }}"><i style="color: green;" class="fas fa-eye fa-lg"></i> Supervision</a>
-        <a href="{{ url_for('stockage') }}"><i style="color: green;" class="fas fa-database fa-lg"></i> Stockage</a>
-        <a href="#"><i style="color: green;" class="fas fa-info-circle fa-lg"></i> À propos</a>
-    </nav> 
+    
+    {% include'header/header.html'%}
     
     <div class="container">
         <div class="query-result" id="result1">
@@ -181,7 +159,7 @@
     {}
        
     </div>
-    {% include 'footer.html' %}
+    {% include'footer/footer.html'%}
 
 <script></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

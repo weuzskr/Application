@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="../static/images/télécharger.png">
+    <link rel="stylesheet" href="../static/css/navbar.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWR-Graphique de données SQL</title>
+    <!-- Inclure Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+{%include 'header/header.html'%}
+<style>
+    body{
+        background-image: url(../static/images/back2.jpg);
+        margin-bottom: 100px;
+    }
+#conteneur{
+    display: flex;
+}
+
+    #chart-container1 {
+        width: 45%;
+        border: 4px outset #ccc;/* Ajout de la bordure */
+        padding: 10px; /* Espacement intérieur */
+        height: 80%;
+        margin-top: 50px;
+        
+        
+        
+    }
+    canvas {
+        max-width: 100%; /* Assurez-vous que le graphique ne dépasse pas de son conteneur */
+    }
+    #chart-container2 {
+            width: 45%; /* Ajustez la largeur selon vos besoins */
+            margin: 0 auto;
+            border: 4px outset #ccc; /* Ajout de la bordure */
+            padding: 10px; /* Ajout de marge intérieure */
+            margin-top: 50px;
+        }
+
+        .popup {
+            display: none; /* Par défaut, le pop-up est caché */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            border: 1px solid #000000;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .overlay {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .table-container {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+           margin-top: 30px;
+            margin-bottom: 170px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .sql-text {
+            display: none;
+        }
+        .sql-id:hover {
+            cursor: pointer;
+            text-decoration: underline;
+            color: #007bff;
+        }
+        
+</style>
+<body>
+<div id="conteneur">
+
+    <div id="chart-container1">
+        <canvas id="myChart" title="Ce graphique sera utilisé pour afficher des données sur les performances des rêquetes."></canvas>
+    </div>
+    
+
+    <div id="chart-container2">
+        <canvas id="line-chart" title="Ce graphique fournit des informations sur l'utilisation de la mémoire pour le SGA (System Global Area)"></canvas>
+    </div>
+
+
+<div class="popup" id="popup">
+    <h2>Oracle AWR</h2>
+    <p>Cette page affiche les données de performances pour l’analyse et le diagnostic AWR (Automatic Workload Repository)</p>
+    <button onclick="closePopup()">Fermer</button>
+</div>
+<div class="overlay" id="overlay"></div>
+</div>
+
+<div class="table-container mt-4">
+    <div class="table-responsive">
+        <table class="table table-striped" title="Cliquez sur le SQL ID de requete pour faire apparaître l'integralite de la rêquete  ">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-database"></i> SQL ID</th>
+                    <th><i class="fas fa-file-alt"></i> SQL Text</th>
+                    <th><i class="fas fa-play"></i> Executions</th>
+                    <th><i class="fas fa-memory"></i> Buffer Gets</th>
+                    <th><i class="fas fa-hdd"></i> Disk Reads</th>
+                    <th><i class="fas fa-clock"></i> CPU Time</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in results %}
+                <tr>
+                    <td class="sql-id" data-id="{{ row[0] }}">{{ row[0] }}</td>
+                    <td class="sql-text">{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                    <td>{{ row[3] }}</td>
+                    <td>{{ row[4] }}</td>
+                    <td>{{ row[5] }}</td>
+                    <td>{{ row[6] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+    </div>
+</div>
+
+    </body>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.sql-id').click(function() {
+                $(this).next('.sql-text').toggle();
+            });
+        });
+    </script>
+
+    <script>
+        // Fonction pour afficher le pop-up
+        function showPopup() {
+            document.getElementById('popup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+            
+            // Masquer le pop-up après 3 secondes
+            setTimeout(closePopup, 3000);
+        }
+
+        // Fonction pour fermer le pop-up
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Événement de chargement de la page
+        window.addEventListener('load', function() {
+            // Afficher le pop-up
+            showPopup();
+        });
+    </script>
+    <script>
+        var ctx = document.getElementById('line-chart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ labels | tojson }},
+                datasets: [{
+                    label: 'Utilisation de la mémoire (Mo)',
+                    data: {{ values | tojson }},
+                    fill: false,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Utilisation de la mémoire par composante (Mo)',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Mémoire (Mo)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    
+
+    <script>
+        // Récupérer les données depuis Flask (exemple de données)
+        var data = {
+            labels: ["SQL_ID1", "SQL_ID2", "SQL_ID3", "SQL_ID4", "SQL_ID5"],
+            datasets: [{
+                label: 'Exécutions',
+                data: [10, 20, 30, 40, 50],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255,99,132,1)',
+                borderWidth: 1
+            },
+            {
+                label: 'Temps écoulé (s)',
+                data: [15, 25, 35, 45, 55],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        // Configurer le graphique
+        var options = {
+            responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Collecte de 5 rêquetes performantes de la base',
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    }
+                }]
+            }
+        };
+
+        // Créer le graphique
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: options
+        });
+
+         </script>
+    {%include'footer/footer.html'%}
+</body>
+</html>
