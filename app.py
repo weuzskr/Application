@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template,request, url_for, session
 import cx_Oracle
+from flask_login import login_required
 from config import ORACLE_CONFIG
 import matplotlib.pyplot as plt
 from io import BytesIO
@@ -15,6 +16,23 @@ from tkinter import ttk
 import plotly.graph_objs as go
 import json
 import numpy as np
+
+# from selenium import webdriver
+
+# options = webdriver.ChromeOptions()
+# driver = webdriver.Chrome(executable_path="chromedriver_win32\chromedriver.exe", options=options)
+# driver.get("https://www.google.fr")
+
+# from selenium import webdriver
+
+# options = webdriver.EdgeOptions()
+# options.binary_location = "edgedriver_win64\msedgedriver.exe"
+# driver = webdriver.Edge(options=options)
+# driver.get("https://www.google.fr")
+
+# from selenium import webdriver
+# driver=webdriver.Chrome("")
+# driver.get("google.fr")
 app = Flask(__name__)
 
 app.config['ORACLE_DSN'] = (
@@ -56,29 +74,16 @@ def update_pie_chart():
     # Lancer la boucle principale d'événements
     root.mainloop()
 
-
+from flask_login import login_required
 
 import plotly.graph_objs as go
 import plotly.express as px
 @app.route('/teste')
+#@login_required
 def teste():
-    try:
-        connection = cx_Oracle.connect(
-            ORACLE_CONFIG['USER'],
-            ORACLE_CONFIG['PASSWORD'],
-            app.config['ORACLE_DSN']
-        )
-        
-       
-            # Closing cursor and connection
-        cursor.close()
-        connection.close()
+    return render_template('apropos.html')
 
-
-        return render_template('alerte.html')
-
-    except cx_Oracle.Error as e:
-        return f"Erreur de connexion à la base de données: {e}"
+   
 
 @app.route('/incident')
 def incident():
@@ -428,6 +433,7 @@ def login():
     
     return render_template('login.html',messages=messages)
 
+
 @app.route('/supervision')
 def supervision():
     try:
@@ -646,7 +652,7 @@ try:
         server.login(smtp_user, smtp_password)
 
         # Envoyer l'e-mail
-        #server.sendmail(from_email, to_email, msg.as_string())
+        # server.sendmail(from_email, to_email, msg.as_string())
         print("E-mail envoyé avec succès.")
     except Exception as e:
         print(f"Erreur lors de l'envoi de l'e-mail : {str(e)}")
@@ -684,5 +690,91 @@ def tentative_connexion():
 
     return render_template('votre_page_html.html')
 
+
+# from selenium.webdriver import Chrome
+# from selenium.webdriver.chrome.service import Service
+# from webdriver_manager.chrome import ChromeDriverManager
+
+# # Créer une instance du navigateur Chrome
+# chrome_driver = Chrome(service=Service(ChromeDriverManager().install()))
+
+# # Charger la page d'accueil de l'application
+# chrome_driver.get("http://127.0.0.1:5000/home")
+
+# # Vérifier si la page a été chargée avec succès (statut 200)
+# if chrome_driver.title:
+#     print("La page fonctionne correctement.")
+# else:
+#     print("La page ne semble pas fonctionner correctement.")
+
+# # Fermer le navigateur après le test
+# chrome_driver.quit()
+
+from flask import render_template, request
+import cx_Oracle
+
+# Importer le module request
+from flask import request
+
+@app.route('/privileges', methods=['GET', 'POST'])
+def formulaire_privileges():
+    try:
+        connection = cx_Oracle.connect(
+            ORACLE_CONFIG['USER'],
+            ORACLE_CONFIG['PASSWORD'],
+            app.config['ORACLE_DSN']
+        )
+
+        cursor = connection.cursor()
+
+        error_message = None  # Initialisation du message d'erreur à None
+
+        if request.method == 'POST':
+            action = request.form['action']  # Capturer l'action du bouton cliqué
+
+            # Traitement des données du formulaire
+            utilisateur = request.form['utilisateur']
+            privileges = request.form.getlist('priveleges[]')
+
+            # Ajouter ou retirer les privilèges en fonction de l'action
+            if action == 'Ajouter':
+                for privilege in privileges:
+                    try:
+                        cursor.execute("GRANT {} TO {}".format(privilege, utilisateur))
+                    except cx_Oracle.DatabaseError:
+                        error_message = f"Le privilège {privilege} existe déjà pour l'utilisateur {utilisateur}."
+
+            elif action == 'Retirer':
+                cursor.execute("SELECT privilege FROM dba_sys_privs WHERE grantee = :user", user=utilisateur)
+                current_privileges = [row[0] for row in cursor.fetchall()]
+                for privilege in current_privileges:
+                    if privilege in privileges:
+                        cursor.execute("REVOKE {} FROM {}".format(privilege, utilisateur))
+
+            # Valider les changements dans la base de données
+            connection.commit()
+
+        # Récupérer la liste des utilisateurs
+        cursor.execute("SELECT username FROM dba_users WHERE created > SYSDATE - 30 AND default_tablespace NOT IN ('SYSTEM', 'SYSAUX') ORDER BY created")
+        utilisateurs = [row[0] for row in cursor.fetchall()]
+
+        # Récupérer la liste des privilèges
+        privileges = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE TABLE', 'ALL PRIVILEGES']  # Exemple de privilèges de base
+
+        
+
+        # Fermer les curseurs et la connexion à la base de données
+        cursor.close()
+        connection.close()
+
+        return render_template('privileges.html', utilisateurs=utilisateurs, privileges=privileges, error_message=error_message)
+
+    except Exception as e:
+        # Gérer les exceptions
+        return "Une erreur s'est produite : {}".format(str(e))
+
+    except cx_Oracle.Error as e:
+        return f"Erreur de connexion à la base de données: {e}"
+    
 if __name__ == '__main__':
     app.run(debug=True)
