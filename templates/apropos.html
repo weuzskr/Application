@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>À propos</title>
+    <link rel="icon" type="image/png" href="../static/images/télécharger.png">
+    <link rel="stylesheet" href="styles.css"> <!-- Lien vers votre fichier CSS -->
+</head>
+<style>body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url(../static/images/back2.jpg);
+
+}
+
+.container {
+    width: 80%;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    color: #333;
+}
+
+h2 {
+    color: #555;
+}
+
+p {
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+</style>
+<body>
+    {%include	'header/header.html'%}
+    <div class="container">
+        <header>
+            <h1>À propos de la sécurité des bases de données</h1>
+        </header>
+        <section id="protection">
+            <h2>Protection des bases de données</h2>
+            <p>La protection des bases de données est un aspect essentiel de la protection des données d’une entreprise. Les dangers potentiels liés à une mauvaise sécurité peuvent inclure le vol et la perte de données, les atteintes à la vie privée, les dommages à la réputation de la société, les pertes financières et les conséquences juridiques.</p>
+            <p>La sécurité des bases de données aide les entreprises à protéger leurs données contre une variété de menaces, y compris les attaques externes telles que le piratage, les attaques par déni de service distribué (DDoS), ou les programmes malveillants et les menaces internes telles que les erreurs humaines et les intervenants malveillants/négligents.</p>
+        </section>
+        <section id="supervision">
+            <h2>Supervision de bases de données</h2>
+            <p>La supervision de bases de données permet d’évaluer en temps réel les performances d’une base de données spécifique. L’objectif est de s’assurer qu’un serveur de base de données fonctionne de manière optimale, tant en termes de logiciels que de matériel.</p>
+            <p>Cette surveillance permet aussi de garder un œil en permanence sur le fonctionnement de l'application qui gère la base de données. Lorsqu'un problème est détecté, déterminer son origine est plus facile, permettant de repérer les problèmes avant qu'ils ne se muent en véritables pannes.</p>
+        </section>
+        
+    </div>
+    {%include	'footer/footer.html'%}
+</body>
+</html>
