@@ -16,6 +16,11 @@ from tkinter import ttk
 import plotly.graph_objs as go
 import json
 import numpy as np
+from flask_login import login_required
+# Importer le module request
+import plotly.express as px
+from test_route import *  # Importez toutes les fonctions de test de test_route.py
+
 
 # from selenium import webdriver
 
@@ -41,6 +46,15 @@ app.config['ORACLE_DSN'] = (
     f"    (CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME={ORACLE_CONFIG['SERVICE_NAME']}))"
     f")"
 )
+
+def run_tests():
+    test_functions = [func for name, func in globals().items() if name.startswith('test_')]
+    for test_function in test_functions:
+        test_function()
+
+
+        run_tests()
+        
 def update_pie_chart():
     # Mettre à jour le graphique à l'intérieur de cette fonction
     total_space = 100  # Remplacer cela par vos propres données
@@ -56,7 +70,7 @@ def update_pie_chart():
 
     # Créer un widget pour afficher le graphique
     fig, ax = plt.subplots()
-    canvas = FigureCanvasTkAgg(fig, master=root)
+    canvas = FigureCanvasTkAgg(fig, master=root) # type: ignore
     canvas_widget = canvas.get_tk_widget()
     canvas_widget.pack()
 
@@ -74,10 +88,7 @@ def update_pie_chart():
     # Lancer la boucle principale d'événements
     root.mainloop()
 
-from flask_login import login_required
 
-import plotly.graph_objs as go
-import plotly.express as px
 @app.route('/teste')
 #@login_required
 def teste():
@@ -710,11 +721,7 @@ def tentative_connexion():
 # # Fermer le navigateur après le test
 # chrome_driver.quit()
 
-from flask import render_template, request
-import cx_Oracle
 
-# Importer le module request
-from flask import request
 
 @app.route('/privileges', methods=['GET', 'POST'])
 def formulaire_privileges():

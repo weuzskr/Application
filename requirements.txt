@@ -1,3 +1,15 @@
 cx_oracle
 requests
 flask_sqlalchemy
+Flask 
+cx_Oracle 
+flask_login 
+flask_sqlalchemy 
+matplotlib 
+smtplib 
+sqlalchemy 
+flask_scss 
+tkinter 
+plotly 
+numpy 
+plotly-express
