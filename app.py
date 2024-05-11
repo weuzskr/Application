@@ -11,8 +11,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 from datetime import datetime
 from flask_scss import Scss
-import tkinter as tk
-from tkinter import ttk
+#import tkinter as tk
+#from tkinter import ttk
 import plotly.graph_objs as go
 import json
 import numpy as np
