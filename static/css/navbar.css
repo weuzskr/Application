@@ -5,11 +5,7 @@ nav {
             display: flex;
             justify-content: space-between; /* Pour aligner les éléments à l'extrémité */
             align-items: center; /* Pour aligner verticalement */
-            /*position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000; /* Assurez-vous que la barre de navigation est en avant par rapport à d'autres éléments */
-        }
+               }
 
         .logo {
             margin-left: 10px; /* Marge pour le logo */

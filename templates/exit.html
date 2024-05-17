@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deconnexion</title>
+</head>
+<style>
+    body {
+            
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url(../static/images/back2.jpg);
+        }
+        .message-container {
+            text-align: center;
+            border: 2px solid whitesmoke;
+            margin-top: 100px;
+            border-radius: 5px;
+            
+        }
+        .message {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .username {
+            color: red;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+</style>
+<body>
+    {%include 'header/header.html'%}
+    <div class="message-container">
+        <img src="../static/images/session.png" alt="Image">
+        <p class="message">{{ msg }}</p>
+        {% if username %}
+            <p>L'utilisateur <span class="username">{{ username }}</span> a été déconnecté.</p>
+        {% endif %}
+    {%include'footer/footer.html'%}
+</body>
+</html>

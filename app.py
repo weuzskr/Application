@@ -297,9 +297,10 @@ def disconnect_user(username):
 def disconnect():
     username = request.form.get('username')
     if disconnect_user(username):
-        return "Utilisateur déconnecté avec succès."
+        msg = "Utilisateur déconnecté avec succès."
     else:
-        return "Erreur lors de la déconnexion de l'utilisateur."
+        msg = "Erreur lors de la déconnexion de l'utilisateur."
+    return render_template('exit.html', msg=msg,username=username)
 
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -343,7 +344,7 @@ def acceuil():
         cursor.execute(query1)
         users_conn = cursor.fetchall()
 
-        quer=("SELECT name, value FROM v$sysstat WHERE name LIKE 'bytes%'")
+        quer=(" SELECT name, value FROM v$sysstat WHERE name LIKE 'bytes%' ")
 
         # Récupérer les résultats de la requête
         cursor.execute(quer)
@@ -358,14 +359,39 @@ def acceuil():
         graph_html = go.Figure(pie_chart).to_html(full_html=False)
         now = datetime.now().strftime("%H:%M:%S")
 
+        cursor.execute("SELECT COUNT(*) FROM V$BACKUP WHERE STATUS = 'ACTIVE'")
+        nb_sauvegardes_en_cours = cursor.fetchone()[0]
+
+        # Exécute la requête SQL pour compter le nombre de fichiers en cours de sauvegarde
+        cursor.execute("SELECT COUNT(*) FROM V$BACKUP_FILES WHERE STATUS = 'ACTIVE'")
+        nb_fichiers_en_cours = cursor.fetchone()[0]
+
         
 
+    
         cursor.close()
         conn.close()
+
+        # # Détermine le message à afficher en fonction du nombre de sauvegardes en cours
+        # if nb_sauvegardes_en_cours > 0:
+        #     message = "Une sauvegarde est en cours."
+        # else:
+        #     message = "Aucune sauvegarde en cours."
+
+            # Détermine le message à afficher en fonction du nombre de sauvegardes en cours
+        if nb_sauvegardes_en_cours > 0:
+            message = f"{nb_sauvegardes_en_cours} sauvegarde(s) est en cours."
+            sauvegarde_en_cours = True
+        else:
+            message = "Aucune sauvegarde en cours."
+            sauvegarde_en_cours = False
+
+
         
-        return render_template('home.html', current_date=now,graph=graph_html,users_conn=users_conn, owners=owners, num_rows=num_rows,rows=rows, result=result,users=users,tables=tables)
+        return render_template('home.html', message=message, current_date=now,graph=graph_html,users_conn=users_conn, owners=owners, num_rows=num_rows,rows=rows, result=result,users=users,tables=tables)
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
+
 
 @app.route("/audit",  methods=['GET', 'POST'])
 def audit():
@@ -616,6 +642,7 @@ def dashboard():
     except cx_Oracle.Error as e:
         return f"Erreur de connexion à la base de données: {e}"
 
+
 # Établir une connexion à la base de données Oracle
 connection = cx_Oracle.connect(
      ORACLE_CONFIG['USER'],
@@ -631,7 +658,8 @@ try:
     active_sessions_count = cursor.fetchone()[0]
 
     # Exécuter la requête pour récupérer les noms d'utilisateur des sessions actives distinctes
-    cursor.execute("SELECT DISTINCT username FROM v$session WHERE status = 'ACTIVE'")
+    #cursor.execute("SELECT DISTINCT username FROM v$session WHERE status = 'ACTIVE'")
+    cursor.execute("SELECT DISTINCT username FROM v$session")
     active_users = cursor.fetchall()
 
     # Paramètres d'envoi d'e-mail
@@ -643,8 +671,8 @@ try:
     smtp_password = "jmwl dutn dxnb ojcc"
 
     # Construire le corps du message avec les informations récupérées
-    message_body = f"Nombre de sessions actives : {active_sessions_count}\n\n"
-    message_body += "Utilisateurs actifs sont  : \n"
+    message_body = f"Nombre de sessions actives : {active_sessions_count}\n\n\n"
+    message_body += "Utilisateurs actifs sont  : \n\n"
     for user in active_users:
         message_body += f"- {user[0]}\n"
 
@@ -663,7 +691,7 @@ try:
         server.login(smtp_user, smtp_password)
 
         # Envoyer l'e-mail
-        # server.sendmail(from_email, to_email, msg.as_string())
+        #server.sendmail(from_email, to_email, msg.as_string())
         print("E-mail envoyé avec succès.")
     except Exception as e:
         print(f"Erreur lors de l'envoi de l'e-mail : {str(e)}")
