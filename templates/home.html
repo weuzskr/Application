@@ -202,16 +202,17 @@ button {
         <!-- Dashboard Card 1 -->
    <div class="dashboard-container">
 
-        <div class="dashboard-card">
-            <div class="centered-icon" id="animated-icon">
-                <i class="fas fa-save fa-2x"></i>
-            </div>
-            <h3>Sauvegardes et Récupérations</h3>
-            <p>Historiques des Sauvegardes</p>
-            <div class="notification">Pas de sauvegarde en cours, merci</div>
-            <!-- Ajoutez d'autres éléments en fonction des besoins -->
+    <div class="dashboard-card">
+        <div class="centered-icon" id="animated-icon">
+            <i class="fas fa-save fa-2x"></i>
         </div>
-
+        <h3>Sauvegardes et Récupérations</h3>
+        <p>Historiques des Sauvegardes</p>
+        <div style="text-align: center;" class="notification">{{ message }}</div>
+        
+            
+    </div>
+    
         <!-- Dashboard Card 2 -->
         
 
@@ -225,6 +226,7 @@ button {
             
             <h3>Utilisateurs </h3>
             <p>L'ensemble des Utilisateurs</p>
+            
             <ul>
                 {% for user in users_conn %}
                     <li>{{ user[0] }}</li>
@@ -233,6 +235,7 @@ button {
                         <button type="submit"><i class="fas fa-sign-out-alt"></i> Déconnecter</button>
                     </form>
                 {% endfor %}
+                
             </ul>
             
         </div>
@@ -431,7 +434,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+        document.addEventListener('DOMContentLoaded', function() {
+            const notification = document.querySelector('.notification');
+            if (notification) {
+                // Ajouter l'icône à la notification
+                notification.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + notification.innerHTML;
+                
+                // Ajouter la classe pour l'animation clignotante
+                notification.classList.add('blink');
+            }
+        });
     
+
+
+
+
 </script>
 
 <script type="text/javascript">
