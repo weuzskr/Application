@@ -1,16 +1,25 @@
 # Projet Flask de Déconnexion d'Utilisateur
 
 ## Description
-Ce projet est une application web simple développée avec Flask qui permet de déconnecter un utilisateur. Lorsqu'un utilisateur est déconnecté, un message de confirmation ou d'erreur est affiché sur une page dédiée avec une mise en forme soignée.
+Dans ce contexte, l'implémentation d'une plateforme de supervision et de sécurité devient impérieuse. En assurant une surveillance constante et une protection proactive, une telle plateforme garantit que les données stockées dans Oracle 19c demeurent à l'abri des menaces internes et externes. Ainsi, cette introduction souligne l'importance cruciale de sécuriser et de surveiller les systèmes de gestion de bases de données, en mettant en lumière le rôle essentiel que joue Oracle Database 19c dans cet écosystème en constante évolution.
 
 ## Fonctionnalités
-- Déconnexion de l'utilisateur via un formulaire.
-- Affichage d'un message de succès ou d'erreur.
-- Le nom de l'utilisateur est mis en évidence dans le message de déconnexion.
+•	Analyser les besoins de supervision.
+•	Analyser des besoins sécurité dans les bases de données Oracle 19c. 
+•	Évaluer les outils de supervision existants pour Oracle 19c.
+•	Dresser un tableau comparatif des outils de supervision.
+•	Concevoir une plateforme de supervision et de sécurité adaptée à Oracle 19c. 
+•	Développer des mécanismes de sécurité pour Oracle 19c.
+•	Tester et évaluer la plateforme de supervision et de sécurité. 
+•	Proposer des recommandations pour l'implémentation pratique.
+•	Étudier l'impact économique de la mise en place de la plateforme.
+•	Évaluer la conformité aux normes de sécurité
+
 
 ## Prérequis
 - Python 3.x
 - Flask
+- Oracle 19c
 
 ## Installation
 
@@ -34,24 +43,3 @@ Ce projet est une application web simple développée avec Flask qui permet de d
 ## Configuration
 Assurez-vous d'avoir une fonction `disconnect_user` définie dans votre projet. Voici un exemple de structure du fichier principal de l'application :
 
-```python
-from flask import Flask, request, render_template
-
-app = Flask(__name__)
-
-def disconnect_user(username):
-    # Logique pour déconnecter l'utilisateur
-    # Retourne True si la déconnexion est réussie, sinon False
-    pass
-
-@app.route("/disconnect", methods=['POST'])
-def disconnect():
-    username = request.form.get('username')
-    if disconnect_user(username):
-        msg = "Utilisateur déconnecté avec succès."
-    else:
-        msg = "Erreur lors de la déconnexion de l'utilisateur."
-    return render_template('exit.html', msg=msg, username=username)
-
-if __name__ == "__main__":
-    app.run(debug=True)
