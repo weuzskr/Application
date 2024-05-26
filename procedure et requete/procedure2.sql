@@ -15,3 +15,9 @@ BEGIN
     VALUES (connection_log_seq.nextval, USER, SYSTIMESTAMP, v_status);
 END;
 /
+CREATE OR REPLACE TRIGGER logon_trigger
+AFTER LOGON ON DATABASE
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Bonjour');
+END;
+/
