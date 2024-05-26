@@ -1,6 +1,7 @@
 <head>
     <link rel="stylesheet" href="../../static/css/navbar.css"/>
 </head>
+<body >
 
 <nav>
     <div class="logo">
@@ -12,7 +13,7 @@
         <a href={{url_for("acceuil")}}><i style="color: green;" class="fas fa-tachometer-alt fa-lg"></i> Dashboard</a>
         <!-- Liste déroulante pour Supervision -->
         <div class="dropdown">
-            <a href="#" class="dropbtn"><i style="color: green;" class="fas fa-eye fa-lg"></i> Supervision</a>
+            <a href="{{ url_for('stockage') }}" class="dropbtn"><i style="color: green;" class="fas fa-eye fa-lg"></i> Supervision</a>
             <div class="dropdown-content">
                 <a href="{{ url_for('stockage') }}"><i style="color: green; " class="fas fa-hdd "></i> Stockage</a>
                 <a href="{{ url_for('dashboard') }}"><i style="color: green;" class="fas fa-microchip "></i> Processeur</a>
@@ -21,7 +22,7 @@
             
         </div>
         <div class="dropdown">
-            <a href="#" class="dropbtn"><i style="color: green;" class="fas fa-shield-alt fa-lg"></i> Sécurite</a>
+            <a href="{{url_for('formulaire_privileges')}}" class="dropbtn"><i style="color: green;" class="fas fa-shield-alt fa-lg"></i> Sécurite</a>
             <div class="dropdown-content">
                 <a href="{{url_for('formulaire_privileges')}}"><i style="color: green;" class="fas fa-lock "></i> Privilèges</a>
                 <a href="{{url_for('incident')}}"><i style="color: green;" class="fas fa-exclamation-circle "></i> Incidents</a>
@@ -34,3 +35,4 @@
     <!-- Bouton de déconnexion -->
     <a class="logout-btn" href="/"><i style="color: red;" class="fas fa-sign-out-alt fa-lg"></i> Déconnexion</a>
 </nav>
+</body>

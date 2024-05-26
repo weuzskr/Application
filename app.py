@@ -333,7 +333,8 @@ def acceuil():
         cursor.execute(query_tables)
         tables = [row[0] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT OWNER, TABLE_NAME, TABLESPACE_NAME, NUM_ROWS, LAST_ANALYZED FROM ALL_TABLES FETCH FIRST 15 ROWS ONLY")
+        cursor.execute("SELECT OWNER, TABLE_NAME, TABLESPACE_NAME, NUM_ROWS, LAST_ANALYZED FROM ALL_TABLES FETCH FIRST 10 ROWS ONLY")
+        
         rows = cursor.fetchall()
         
          # Transformation des données en format adapté pour Chart.js
