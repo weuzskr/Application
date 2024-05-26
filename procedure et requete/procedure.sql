@@ -15,3 +15,15 @@ BEGIN
     -- Vous pouvez également envoyer une alerte via DBMS_SCHEDULER ou une autre méthode
 END;
 /
+CREATE OR REPLACE PROCEDURE get_login_errors IS
+BEGIN
+    FOR login_error IN (
+        SELECT username, timestamp, action_name, returncode
+        FROM dba_audit_session
+        WHERE action_name = 'LOGON' AND returncode != 0
+    )
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('Utilisateur: ' || login_error.username || ', Heure: ' || login_error.timestamp || ', Code de retour: ' || login_error.returncode);
+    END LOOP;
+END;
+/

@@ -11,3 +11,12 @@ EXCEPTION
         ROLLBACK; -- Rollback pour éviter de compromettre la transaction actuelle
 END log_backup_error;
 /
+CREATE OR REPLACE PROCEDURE monitor_logs IS
+BEGIN
+    FOR log_info IN (SELECT group#, thread#, member FROM v$log)
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('Log Group: ' || log_info.group# || ', Thread: ' || log_info.thread# || ', Member: ' || log_info.member);
+    END LOOP;
+END;
+/
+
