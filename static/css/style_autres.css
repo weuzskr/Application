@@ -1,0 +1,108 @@
+
+body {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    min-height: 110vh; /* La hauteur minimale de la fenêtre visible */
+    display: flex;
+    flex-direction: column;
+     background-image: url(../static/images/back2.jpg);
+}
+
+.table {
+    border: 1px solid #dee2e6;
+    width: calc(90% - 0px); /* Diviser l'espace disponible en deux */
+    height: auto;
+    max-width: 1000px; /* Max width for the graph */
+    max-height: 400px; /* Max height for the graph */
+    border: 1px solid #ccc; /* Border style */
+    box-sizing: border-box;
+    text-align: center;
+    margin-top: 50px; /* Ajouter une marge supérieure */
+    padding-bottom: 600px;
+    margin-left: 10px;
+    margin-top: 300px;
+}
+
+canvas {
+    width: calc(50% - 5px); /* Diviser l'espace disponible en deux */
+    height: auto;
+    max-width: 400px; /* Max width for the graph */
+    max-height: 400px; /* Max height for the graph */
+    border: 1px solid #ccc; /* Border style */
+    box-sizing: border-box;
+    text-align: center;
+    margin-top: 50px; /* Ajouter une marge supérieure */
+}
+
+th {
+    border: 1px solid #dee2e6;
+    background-color: #f2f2f2;
+    font-size: 14px; /* Taille de police personnalisée */
+    font-weight: bold; /* Gras */
+    color: #333; /* Couleur de texte personnalisée */
+    padding: 10px; /* Espacement intérieur */
+    text-align: left; /* Alignement du texte à gauche */
+}
+
+td {
+    border: 1px solid #dee2e6;
+    font-size: 13px; /* Taille de police personnalisée */
+    color: #666; /* Couleur de texte personnalisée */
+    padding: 10px; /* Espacement intérieur */
+    text-align: left; /* Alignement du texte à gauche */
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+.container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 3px solid #ccc;
+    border-radius: 5px;
+}
+h1 {
+    text-align: center;
+    color: #333;
+}
+.info {
+    margin-top: 20px;
+    text-align: center;
+}
+.info p {
+    margin: 10px 0;
+}
+.progress {
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.progress-bar {
+    background-color: red;
+    height: 30px;
+    line-height: 30px;
+    color: rgb(217, 51, 51);
+    text-align: center;
+    transition: width 0.5s ease;
+}
+
+#data-table{
+    border: 2px outset #CCC;
+    margin-top: 70px;
+    border-radius: 6px;
+}
+
+#spaceUsageChart{
+    border: 2px inset #CCC;
+    margin-top: 70px; 
+    margin-bottom: 20px;
+    border-radius: 6px;
+}
